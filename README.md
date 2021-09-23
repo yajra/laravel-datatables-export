@@ -28,6 +28,13 @@ This version is still on experimental stage.
 
 `composer require yajra/laravel-datatables-export`
 
+The package also requires batch job:
+
+```shell
+php artisan queue:batches-table
+php artisan migrate
+```
+
 #### Service Provider (Optional on Laravel 5.5)
 
 `Yajra\DataTables\ExportServiceProvider::class`
