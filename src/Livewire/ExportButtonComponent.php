@@ -14,11 +14,14 @@ class ExportButtonComponent extends Component
 
     public $exporting = false;
     public $exportFinished = false;
+    public $exportFailed = false;
     public $batchJobId = null;
 
     public function export($batchJobId)
     {
         $this->batchJobId = $batchJobId;
+        $this->exportFinished = false;
+        $this->exportFailed = false;
         $this->exporting = true;
     }
 
@@ -34,6 +37,7 @@ class ExportButtonComponent extends Component
     public function updateExportProgress()
     {
         $this->exportFinished = $this->exportBatch->finished();
+        $this->exportFailed = $this->exportBatch->hasFailures();
 
         if ($this->exportFinished) {
             $this->exporting = false;
