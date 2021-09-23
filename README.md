@@ -71,6 +71,7 @@ If you discover any security related issues, please email [aqangeles@gmail.com](
 
 - [Arjay Angeles](https://github.com/yajra)
 - [All Contributors](https://github.com/yajra/laravel-datatables-export/graphs/contributors)
+- [Laravel Daily](https://github.com/LaravelDaily/Laravel-Excel-Export-Import-Large-Files)
 
 ## License
 
