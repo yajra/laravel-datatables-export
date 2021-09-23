@@ -1,0 +1,49 @@
+{
+  "name": "yajra/laravel-datatables-export",
+  "description": "Laravel DataTables Queued Export Plugin.",
+  "keywords": [
+    "laravel",
+    "datatables",
+    "export",
+    "jquery"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Arjay Angeles",
+      "email": "aqangeles@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4|8.*",
+    "yajra/laravel-datatables-buttons": "4.*",
+    "maatwebsite/excel": "^3.0",
+    "livewire/livewire": "^2.6",
+    "laravel/framework": "^8.61"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Yajra\\DataTables\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Yajra\\DataTables\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Yajra\\DataTables\\ExportServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

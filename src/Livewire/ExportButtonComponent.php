@@ -1,0 +1,60 @@
+<?php
+
+namespace Yajra\DataTables\Livewire;
+
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+
+class ExportButtonComponent extends Component
+{
+    public $tableId;
+    public $type = 'csv';
+    public $filename = null;
+
+    public $exporting = false;
+    public $exportFinished = false;
+    public $batchJobId = null;
+
+    public function export($batchJobId)
+    {
+        $this->batchJobId = $batchJobId;
+        $this->exporting = true;
+    }
+
+    public function getExportBatchProperty()
+    {
+        if (!$this->batchJobId) {
+            return null;
+        }
+
+        return Bus::findBatch($this->batchJobId);
+    }
+
+    public function updateExportProgress()
+    {
+        $this->exportFinished = $this->exportBatch->finished();
+
+        if ($this->exportFinished) {
+            $this->exporting = false;
+        }
+    }
+
+    public function downloadExport()
+    {
+        return Storage::download('exports/'.$this->batchJobId.'.'.$this->getType(), $this->filename);
+    }
+
+    public function render()
+    {
+        return view('datatables-export::export-button');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getType(): string
+    {
+        return $this->type == 'csv' ? 'csv' : 'xlsx';
+    }
+}
