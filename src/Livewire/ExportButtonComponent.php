@@ -2,7 +2,6 @@
 
 namespace Yajra\DataTables\Livewire;
 
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
