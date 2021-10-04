@@ -31,7 +31,7 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings
     {
         return $this->columns
             ->map(function (Column $column) use ($row) {
-                return $row[$column['data']] ?? '';
+                return $row[$column['data']];
             })
             ->toArray();
     }
