@@ -4,7 +4,6 @@ namespace Yajra\DataTables;
 
 use Illuminate\Support\Facades\Bus;
 use Yajra\DataTables\Jobs\DataTableExportJob;
-use Yajra\DataTables\Services\DataTable;
 
 trait WithExportQueue
 {
@@ -18,19 +17,11 @@ trait WithExportQueue
      */
     public function render($view, $data = [], $mergeData = [])
     {
-        if ($this->request()->ajax() && $this->request()->wantsJson()) {
-            return app()->call([$this, 'ajax']);
+        if (! $this->request()->wantsJson() && $this->request()->get('action') == 'exportQueue') {
+            return $this->exportQueue();
         }
 
-        if ($action = $this->request()->get('action') and in_array($action, array_merge($this->actions, ['exportQueue']))) {
-            if ($action == 'print') {
-                return app()->call([$this, 'printPreview']);
-            }
-
-            return app()->call([$this, $action]);
-        }
-
-        return view($view, $data, $mergeData)->with($this->dataTableVariable, $this->getHtmlBuilder());
+        return parent::render($view, $data, $mergeData);
     }
 
     /**
