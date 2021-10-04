@@ -66,6 +66,27 @@ class PermissionsDataTable extends DataTable
 
 3. Run your queue worker via `php artisan queue:work`.
 
+## Export Filename
+
+You can set the export filename by setting the property.
+
+```phpt
+<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" filename="my-table.xlsx" />
+<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" filename="my-table.csv" />
+
+<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" :filename="$filename" />
+```
+
+## Export Type
+
+You can set the export type by setting the property to `csv` or `xlsx`. Default value is `csv`.
+
+```phpt
+<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" type="xlsx" />
+<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" type="csv" />
+```
+
+
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/yajra/laravel-datatables-export/blob/master/.github/CONTRIBUTING.md) for details.
