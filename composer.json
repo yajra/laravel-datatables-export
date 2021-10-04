@@ -5,7 +5,9 @@
     "laravel",
     "datatables",
     "export",
-    "jquery"
+    "excel",
+    "livewire",
+    "queue"
   ],
   "license": "MIT",
   "authors": [
