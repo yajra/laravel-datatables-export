@@ -48,7 +48,7 @@ php artisan migrate
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
 ```phpt
-<livewire:export-button :table-id="$dataTable->getTableAttribute('id')" />
+<livewire:export-button :table-id="$dataTable->getTableId()" />
 ```
 
 2. On your `DataTable` class instance, use `WithExportQueue`
@@ -65,6 +65,27 @@ class PermissionsDataTable extends DataTable
 ```
 
 3. Run your queue worker via `php artisan queue:work`.
+
+## Export Filename
+
+You can set the export filename by setting the property.
+
+```phpt
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" />
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv" />
+
+<livewire:export-button :table-id="$dataTable->getTableId()" :filename="$filename" />
+```
+
+## Export Type
+
+You can set the export type by setting the property to `csv` or `xlsx`. Default value is `csv`.
+
+```phpt
+<livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
+<livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
+```
+
 
 ## Contributing
 

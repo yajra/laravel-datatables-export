@@ -4,10 +4,12 @@ namespace Yajra\DataTables\Livewire;
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class ExportButtonComponent extends Component
 {
+    public $class = 'btn btn-primary';
     public $tableId;
     public $type = 'csv';
     public $filename = null;
@@ -46,19 +48,31 @@ class ExportButtonComponent extends Component
 
     public function downloadExport()
     {
-        return Storage::download('exports/'.$this->batchJobId.'.'.$this->getType(), $this->filename);
+        return Storage::download('exports/'.$this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 
     public function render()
     {
-        return view('datatables-export::export-button');
+        return view('datatables-export::export-button', [
+            'fileType' => $this->getType()
+        ]);
     }
 
-    /**
-     * @return string
-     */
     protected function getType(): string
     {
+        if (Str::endsWith($this->filename, ['csv', 'xlsx'])) {
+            return pathinfo($this->filename, PATHINFO_EXTENSION);
+        }
+
         return $this->type == 'csv' ? 'csv' : 'xlsx';
+    }
+
+    protected function getFilename()
+    {
+        if (Str::endsWith($this->filename, ['csv', 'xlsx'])) {
+            return $this->filename;
+        }
+
+        return null;
     }
 }

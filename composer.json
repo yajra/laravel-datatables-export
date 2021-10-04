@@ -5,7 +5,9 @@
     "laravel",
     "datatables",
     "export",
-    "jquery"
+    "excel",
+    "livewire",
+    "queue"
   ],
   "license": "MIT",
   "authors": [
@@ -17,9 +19,8 @@
   "require": {
     "php": ">=7.4|8.*",
     "yajra/laravel-datatables-buttons": "4.*",
-    "maatwebsite/excel": "^3.0",
-    "livewire/livewire": "^2.6",
-    "laravel/framework": "^8.61"
+    "yajra/laravel-datatables-html": "^4.40",
+    "livewire/livewire": "2.*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5.9"
