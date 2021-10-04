@@ -2,12 +2,14 @@
 
 namespace Yajra\DataTables\Livewire;
 
+use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 class ExportButtonComponent extends Component
 {
+    public $class = 'btn btn-primary';
     public $tableId;
     public $type = 'csv';
     public $filename = null;
@@ -54,9 +56,6 @@ class ExportButtonComponent extends Component
         return view('datatables-export::export-button');
     }
 
-    /**
-     * @return string
-     */
     protected function getType(): string
     {
         return $this->type == 'csv' ? 'csv' : 'xlsx';

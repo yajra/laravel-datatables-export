@@ -15,7 +15,7 @@
         <button type="submit"
                 x-ref="exportBtn"
                 :disabled="$wire.exporting"
-                class="btn btn-primary"
+                class="{{ $class }}"
         >Export</button>
     </form>
 
