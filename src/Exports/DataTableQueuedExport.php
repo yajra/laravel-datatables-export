@@ -5,11 +5,13 @@ namespace Yajra\DataTables\Exports;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 
-class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings
+class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, WithColumnFormatting
 {
     use Exportable;
 
@@ -39,5 +41,27 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings
     public function headings(): array
     {
         return $this->columns->pluck('title')->toArray();
+    }
+
+    public function columnFormats(): array
+    {
+        $formats = [];
+
+        $this->columns
+            ->each(function (Column $column, $index) use (&$formats) {
+                $formats[$this->num2alpha($index - 1)] = $column['exportFormat'] ?? NumberFormat::FORMAT_TEXT;
+            })
+            ->toArray();
+
+        return $formats;
+    }
+
+    protected function num2alpha($n)
+    {
+        for ($r = ""; $n >= 0; $n = intval($n / 26) - 1) {
+            $r = chr($n % 26 + 0x41) . $r;
+        }
+
+        return $r;
     }
 }

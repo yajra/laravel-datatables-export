@@ -86,6 +86,15 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 <livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
 ```
 
+## Formatting Columns
+
+You can format column by setting it via Column definition on you DataTable service class.
+
+```phpt
+Column::make('mobile')->exportFormat('00000000000'),
+```
+
+The format above will treat mobile numbers with leading zeroes.
 
 ## Contributing
 
