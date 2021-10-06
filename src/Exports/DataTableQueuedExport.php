@@ -2,6 +2,7 @@
 
 namespace Yajra\DataTables\Exports;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -49,6 +50,14 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
                     return Date::dateTimeToExcel($row[$property]);
                 }
 
+                if ($this->wantsDateFormat($column)) {
+                    $this->dates[] = $index;
+
+                    $dateValue = $row[$property];
+
+                    return $dateValue ? Date::dateTimeToExcel(Carbon::parse($dateValue)) : '';
+                }
+
                 return $row[$property];
             })
             ->toArray();
@@ -65,8 +74,8 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
 
         $this->columns
             ->each(function (Column $column, $index) use (&$formats) {
-                if (in_array($index, $this->dates)) {
-                    return $formats[$this->num2alpha($index - 1)] = NumberFormat::FORMAT_DATE_YYYYMMDD;
+                if (in_array($index, $this->dates) || $this->wantsDateFormat($column)) {
+                    return $formats[$this->num2alpha($index - 1)] = $column['exportFormat'] ?? NumberFormat::FORMAT_DATE_YYYYMMDD;
                 }
 
                 if (isset($column['exportFormat'])) {
@@ -85,5 +94,18 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
         }
 
         return $r;
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsDateFormat(Column $column): bool
+    {
+        if (!isset($column['exportFormat'])) {
+            return false;
+        }
+
+        return in_array($column['exportFormat'], config('datatables-export.date_formats', []));
     }
 }
