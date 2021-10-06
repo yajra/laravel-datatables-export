@@ -94,6 +94,8 @@ You can format column by setting it via Column definition on you DataTable servi
 Column::make('mobile')->exportFormat('00000000000'),
 ```
 
+The format above will treat mobile numbers with leading zeroes.
+
 ## Date Fields Formatting
 
 The package will auto-detect date fields when used with a valid format.
@@ -134,8 +136,6 @@ Valid date formats can be adjust on `datatables-export.php` config file.
         NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
     ]
 ```
-
-The format above will treat mobile numbers with leading zeroes.
 
 ## Contributing
 
