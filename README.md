@@ -94,6 +94,47 @@ You can format column by setting it via Column definition on you DataTable servi
 Column::make('mobile')->exportFormat('00000000000'),
 ```
 
+## Date Fields Formatting
+
+The package will auto-detect date fields when used with a valid format.
+
+```phpt
+Column::make('report_date')->exportFormat('mm/dd/yyyy'),
+Column::make('created_at'),
+Column::make('updated_at')->exportFormat(NumberFormat::FORMAT_DATE_DATETIME),
+```
+
+## Valid Date Formats
+
+Valid date formats can be adjust on `datatables-export.php` config file.
+
+```phpt
+    'date_formats' => [
+        'mm/dd/yyyy',
+        NumberFormat::FORMAT_DATE_DATETIME,
+        NumberFormat::FORMAT_DATE_YYYYMMDD,
+        NumberFormat::FORMAT_DATE_XLSX22,
+        NumberFormat::FORMAT_DATE_DDMMYYYY,
+        NumberFormat::FORMAT_DATE_DMMINUS,
+        NumberFormat::FORMAT_DATE_DMYMINUS,
+        NumberFormat::FORMAT_DATE_DMYSLASH,
+        NumberFormat::FORMAT_DATE_MYMINUS,
+        NumberFormat::FORMAT_DATE_TIME1,
+        NumberFormat::FORMAT_DATE_TIME2,
+        NumberFormat::FORMAT_DATE_TIME3,
+        NumberFormat::FORMAT_DATE_TIME4,
+        NumberFormat::FORMAT_DATE_TIME5,
+        NumberFormat::FORMAT_DATE_TIME6,
+        NumberFormat::FORMAT_DATE_TIME7,
+        NumberFormat::FORMAT_DATE_XLSX14,
+        NumberFormat::FORMAT_DATE_XLSX15,
+        NumberFormat::FORMAT_DATE_XLSX16,
+        NumberFormat::FORMAT_DATE_XLSX17,
+        NumberFormat::FORMAT_DATE_YYYYMMDD2,
+        NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
+    ]
+```
+
 The format above will treat mobile numbers with leading zeroes.
 
 ## Contributing
