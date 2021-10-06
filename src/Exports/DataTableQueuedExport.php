@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 
@@ -17,6 +18,13 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
 
     protected $query;
     protected $columns;
+
+    /**
+     * Index of fields with date instance.
+     *
+     * @var array
+     */
+    protected $dates = [];
 
     public function __construct($query, Collection $columns)
     {
@@ -32,8 +40,16 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
     public function map($row): array
     {
         return $this->columns
-            ->map(function (Column $column) use ($row) {
-                return $row[$column['data']];
+            ->map(function (Column $column, $index) use ($row) {
+                $property = $column['data'];
+
+                if ($row[$property] instanceof \DateTime) {
+                    $this->dates[] = $index;
+
+                    return Date::dateTimeToExcel($row[$property]);
+                }
+
+                return $row[$property];
             })
             ->toArray();
     }
@@ -49,7 +65,13 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
 
         $this->columns
             ->each(function (Column $column, $index) use (&$formats) {
-                $formats[$this->num2alpha($index - 1)] = $column['exportFormat'] ?? NumberFormat::FORMAT_TEXT;
+                if (in_array($index, $this->dates)) {
+                    return $formats[$this->num2alpha($index - 1)] = NumberFormat::FORMAT_DATE_YYYYMMDD;
+                }
+
+                if (isset($column['exportFormat'])) {
+                    return $formats[$this->num2alpha($index - 1)] = $column['exportFormat'];
+                }
             })
             ->toArray();
 
