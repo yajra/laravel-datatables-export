@@ -79,7 +79,7 @@ You can set the export filename by setting the property.
 
 ## Export Type
 
-You can set the export type by setting the property to `csv` or `xlsx`. Default value is `csv`.
+You can set the export type by setting the property to `csv` or `xlsx`. Default value is `xlsx`.
 
 ```phpt
 <livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
