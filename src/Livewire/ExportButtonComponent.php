@@ -11,7 +11,7 @@ class ExportButtonComponent extends Component
 {
     public $class = 'btn btn-primary';
     public $tableId;
-    public $type = 'csv';
+    public $type = 'xlsx';
     public $filename = null;
 
     public $exporting = false;
