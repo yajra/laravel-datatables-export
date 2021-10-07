@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
-This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue and Livewire.
+This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, Laravel Excel and Livewire.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ php artisan queue:batches-table
 php artisan migrate
 ```
 
-#### Service Provider (Optional on Laravel 5.5)
+#### Service Provider (Optional since Laravel 5.5+)
 
 `Yajra\DataTables\ExportServiceProvider::class`
 
@@ -51,7 +51,7 @@ php artisan migrate
 <livewire:export-button :table-id="$dataTable->getTableId()" />
 ```
 
-2. On your `DataTable` class instance, use `WithExportQueue`
+2. On your `DataTable` class, use `WithExportQueue`
 
 ```phpt
 use Yajra\DataTables\WithExportQueue;
@@ -64,7 +64,7 @@ class PermissionsDataTable extends DataTable
 }
 ```
 
-3. Run your queue worker via `php artisan queue:work`.
+3. Run your queue worker. Ex: `php artisan queue:work`
 
 ## Export Filename
 
@@ -88,17 +88,17 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 
 ## Formatting Columns
 
-You can format column by setting it via Column definition on you DataTable service class.
+You can format the column by setting it via Column definition on you DataTable service class.
 
 ```phpt
 Column::make('mobile')->exportFormat('00000000000'),
 ```
 
-The format above will treat mobile numbers with leading zeroes.
+The format above will treat mobile numbers as text with leading zeroes.
 
 ## Date Fields Formatting
 
-The package will auto-detect date fields when used with a valid format.
+The package will auto-detect date fields when used with a valid format or is a DateTime instance.
 
 ```phpt
 Column::make('report_date')->exportFormat('mm/dd/yyyy'),
@@ -108,7 +108,7 @@ Column::make('updated_at')->exportFormat(NumberFormat::FORMAT_DATE_DATETIME),
 
 ## Valid Date Formats
 
-Valid date formats can be adjust on `datatables-export.php` config file.
+Valid date formats can be adjusted on `datatables-export.php` config file.
 
 ```phpt
     'date_formats' => [
