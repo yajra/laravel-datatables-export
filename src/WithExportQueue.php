@@ -31,7 +31,7 @@ trait WithExportQueue
     {
         $batch = Bus::batch([
             new DataTableExportJob(self::class, $this->request->all(), optional($this->request->user())->id),
-        ])->dispatch();
+        ])->name('datatables-export')->dispatch();
 
         return $batch->id;
     }
