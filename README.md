@@ -26,7 +26,7 @@ This version is still on experimental stage.
 
 ## Quick Installation
 
-`composer require yajra/laravel-datatables-export`
+`composer require yajra/laravel-datatables-export -W`
 
 The package also requires batch job:
 
