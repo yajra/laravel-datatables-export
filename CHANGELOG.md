@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.3.0 - 10-07-2021
+
+- Add batch job name. #6
+- Set default export to xlsx. #7
+
 ## v0.2.0 - 10-06-2021
 
 - Add option to set exportFormat from Column builder. #3
