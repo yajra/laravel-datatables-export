@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.5.0 - 10-12-2021
+
+- Passing attributes with self::class #10
+- Allow reconstruction of DataTable instance with custom attributes set via controller.
+
 ## v0.4.0 - 10-12-2021
 
 - Add cast to array for variable $row. #9
