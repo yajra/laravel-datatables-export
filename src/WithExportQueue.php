@@ -15,7 +15,7 @@ trait WithExportQueue
      * @param  array  $mergeData
      * @return mixed
      */
-    public function render($view, $data = [], $mergeData = [])
+    public function render(string $view, array $data = [], array $mergeData = [])
     {
         if (! $this->request()->wantsJson() && $this->request()->get('action') == 'exportQueue') {
             return $this->exportQueue();
@@ -25,12 +25,18 @@ trait WithExportQueue
     }
 
     /**
+     * Create and run batch job.
+     *
      * @throws \Throwable
      */
     public function exportQueue(): string
     {
         $batch = Bus::batch([
-            new DataTableExportJob(self::class, $this->request->all(), optional($this->request->user())->id),
+            new DataTableExportJob(
+                [self::class, $this->attributes],
+                $this->request->all(),
+                optional($this->request->user())->id
+            ),
         ])->name('datatables-export')->dispatch();
 
         return $batch->id;
