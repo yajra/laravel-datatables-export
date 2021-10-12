@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.4.0 - 10-12-2021
+
+- Add cast to array for variable $row. #9
+- Add support for DB Query.
+
 ## v0.3.0 - 10-07-2021
 
 - Add batch job name. #6
