@@ -43,7 +43,8 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
         return $this->columns
             ->map(function (Column $column, $index) use ($row) {
                 $property = $column['data'];
-
+                $row = (array) $row;
+                
                 if ($row[$property] instanceof \DateTime) {
                     $this->dates[] = $index;
 
