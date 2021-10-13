@@ -2,6 +2,10 @@
 
 namespace Yajra\DataTables\Jobs;
 
+use Box\Spout\Common\Type;
+use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -11,7 +15,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Yajra\DataTables\Exports\DataTableQueuedExport;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
 class DataTableExportJob implements ShouldQueue, ShouldBeUnique
@@ -63,12 +68,67 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $type = Str::startsWith(request('exportType'), 'csv') ? '.csv' : '.xlsx';
-        $path = 'exports/'.$this->batchId.$type;
+        $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
+        $writer = WriterEntityFactory::createWriter($type);
+        $writer->openToFile(storage_path('app/exports/' . $this->batchId . '.' . $type));
 
-        (new DataTableQueuedExport(
-            $dataTable->getFilteredQuery(),
-            $oTable->html()->getColumns()->filter->exportable
-        ))->store($path);
+        $columns = $oTable->html()->getColumns()->filter->exportable;
+        $writer->addRow(WriterEntityFactory::createRowFromArray($columns->pluck('title')->toArray()));
+
+        foreach ($dataTable->getFilteredQuery()->cursor() as $row) {
+            $cells = collect();
+            $columns->map(function (Column $column, $index) use ($row, $cells) {
+                $property = $column['data'];
+                $value = $row->{$property} ?? '';
+
+                if ($value instanceof \DateTime || $this->wantsDateFormat($column)) {
+                    $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
+                    $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
+                    $format = $column['exportFormat'] ?? $defaultDateFormat;
+
+                    $cells->push(
+                        WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build())
+                    );
+                } else {
+                    $format = $column['exportFormat']
+                        ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
+                        : null;
+
+                    $value = $this->isNumeric($value) ? (float) $value : $value;
+
+                    $cells->push(WriterEntityFactory::createCell($value, $format));
+                }
+            });
+
+            $writer->addRow(WriterEntityFactory::createRow($cells->toArray()));
+        }
+        $writer->close();
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsDateFormat(Column $column): bool
+    {
+        if (!isset($column['exportFormat'])) {
+            return false;
+        }
+
+        return in_array($column['exportFormat'], config('datatables-export.date_formats', []));
+    }
+
+    /**
+     * @param  mixed  $value
+     * @return bool
+     */
+    protected function isNumeric($value): bool
+    {
+        // Skip numeric style if value has leading zeroes.
+        if (Str::startsWith($value, '0')) {
+            return false;
+        }
+
+        return is_numeric($value);
     }
 }
