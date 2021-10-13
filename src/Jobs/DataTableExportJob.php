@@ -94,7 +94,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
                         : null;
 
-                    $value = is_numeric($value) ? (float) $value : $value;
+                    $value = $this->isNumeric($value) ? (float) $value : $value;
 
                     $cells->push(WriterEntityFactory::createCell($value, $format));
                 }
@@ -116,5 +116,19 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         return in_array($column['exportFormat'], config('datatables-export.date_formats', []));
+    }
+
+    /**
+     * @param  mixed  $value
+     * @return bool
+     */
+    protected function isNumeric($value): bool
+    {
+        // Skip numeric style if value has leading zeroes.
+        if (Str::startsWith($value, '0')) {
+            return false;
+        }
+
+        return is_numeric($value);
     }
 }
