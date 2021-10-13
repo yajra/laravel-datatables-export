@@ -15,7 +15,7 @@ trait WithExportQueue
      * @param  array  $mergeData
      * @return mixed
      */
-    public function render(string $view, array $data = [], array $mergeData = [])
+    public function render($view, $data = [], $mergeData = [])
     {
         if (! $this->request()->wantsJson() && $this->request()->get('action') == 'exportQueue') {
             return $this->exportQueue();
