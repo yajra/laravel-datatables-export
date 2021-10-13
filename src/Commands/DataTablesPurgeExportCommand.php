@@ -22,16 +22,6 @@ class DataTablesPurgeExportCommand extends Command
     protected $description = 'Remove exported files that datatables-export generate.';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return void
@@ -40,7 +30,9 @@ class DataTablesPurgeExportCommand extends Command
     {
         collect(Storage::listContents('exports'))
             ->each(function ($file) {
-                Storage::delete($file['path']);
+                if ($file['timestamp'] < now()->subDay(1)->getTimestamp()) {
+                    Storage::delete($file['path']);
+                }
             });
 
         $this->info('The command was successful. Export files are cleared!');

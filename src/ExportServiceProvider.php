@@ -50,10 +50,6 @@ class ExportServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/config/datatables-export.php', 'datatables-export');
 
-        $this->commands(
-            [
-                DataTablesPurgeExportCommand::class,
-            ]
-        );
+        $this->commands([ataTablesPurgeExportCommand::class]);
     }
 }
