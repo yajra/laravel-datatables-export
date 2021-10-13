@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.5.2 - 10-13-2021
+
+- Fix export when used with Eloquent Builder. #12
+- Fix support for Query Builder.
+
 ## v0.5.1 - 10-13-2021
 
 - Fix render method override #11
