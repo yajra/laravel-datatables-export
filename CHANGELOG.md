@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.5.1 - 10-13-2021
+
+- Fix render method override #11
+
 ## v0.5.0 - 10-12-2021
 
 - Passing attributes with self::class #10
