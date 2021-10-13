@@ -5,6 +5,7 @@ namespace Yajra\DataTables;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Maatwebsite\Excel\ExcelServiceProvider;
+use Yajra\DataTables\Commands\DataTablesPurgeExportCommand;
 use Yajra\DataTables\Generators\DataTablesHtmlCommand;
 use Yajra\DataTables\Generators\DataTablesMakeCommand;
 use Yajra\DataTables\Generators\DataTablesScopeCommand;
@@ -48,5 +49,11 @@ class ExportServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/config/datatables-export.php', 'datatables-export');
+
+        $this->commands(
+            [
+                DataTablesPurgeExportCommand::class,
+            ]
+        );
     }
 }
