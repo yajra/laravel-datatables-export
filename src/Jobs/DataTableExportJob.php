@@ -79,7 +79,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             $cells = collect();
             $columns->map(function (Column $column, $index) use ($row, $cells) {
                 $property = $column['data'];
-                $value = $row->{$property};
+                $value = $row->{$property} ?? '';
 
                 if ($value instanceof \DateTime || $this->wantsDateFormat($column)) {
                     $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
