@@ -94,6 +94,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
                         : null;
 
+                    $value = is_numeric($value) ? (float) $value : $value;
+
                     $cells->push(WriterEntityFactory::createCell($value, $format));
                 }
             });
