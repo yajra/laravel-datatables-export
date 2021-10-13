@@ -43,23 +43,22 @@ class DataTableQueuedExport implements FromQuery, WithMapping, WithHeadings, Wit
         return $this->columns
             ->map(function (Column $column, $index) use ($row) {
                 $property = $column['data'];
-                $row = (array) $row;
                 
-                if ($row[$property] instanceof \DateTime) {
+                if ($row->{$property} instanceof \DateTime) {
                     $this->dates[] = $index;
 
-                    return Date::dateTimeToExcel($row[$property]);
+                    return Date::dateTimeToExcel($row->{$property});
                 }
 
                 if ($this->wantsDateFormat($column)) {
                     $this->dates[] = $index;
 
-                    $dateValue = $row[$property];
+                    $dateValue = $row->{$property};
 
                     return $dateValue ? Date::dateTimeToExcel(Carbon::parse($dateValue)) : '';
                 }
 
-                return $row[$property];
+                return $row->{$property};
             })
             ->toArray();
     }
