@@ -2,6 +2,7 @@
 
 namespace Yajra\DataTables\Jobs;
 
+use Box\Spout\Common\Helper\CellTypeHelper;
 use Box\Spout\Common\Type;
 use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
@@ -73,7 +74,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $writer->openToFile(storage_path('app/exports/' . $this->batchId . '.' . $type));
 
         $columns = $oTable->html()->getColumns()->filter->exportable;
-        $writer->addRow(WriterEntityFactory::createRowFromArray($columns->pluck('title')->toArray()));
+        $writer->addRow(
+            WriterEntityFactory::createRowFromArray(
+                $columns->map(fn($column) => strip_tags($column['title']))->toArray()
+            )
+        );
 
         foreach ($dataTable->getFilteredQuery()->cursor() as $row) {
             $cells = collect();
@@ -81,7 +86,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 $property = $column['data'];
                 $value = $row->{$property} ?? '';
 
-                if ($value instanceof \DateTime || $this->wantsDateFormat($column)) {
+                if (CellTypeHelper::isDateTimeOrDateInterval($value) || $this->wantsDateFormat($column)) {
                     $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
                     $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
                     $format = $column['exportFormat'] ?? $defaultDateFormat;
