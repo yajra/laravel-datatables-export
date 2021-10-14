@@ -5,6 +5,11 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 return [
 
     /**
+     * Default export format for date.
+     */
+    'default_date_format' => 'yyyy-mm-dd',
+
+    /**
      * List of valid date formats to be used for auto-detection.
      */
     'date_formats' => [

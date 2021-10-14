@@ -6,13 +6,14 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
-This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, Laravel Excel and Livewire.
+This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, Spout and Livewire.
 
 ## Requirements
 
 - [PHP >=7.4](http://php.net/)
 - [Laravel 8.x](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
+- [Spout](https://github.com/box/spout)
 - [Laravel DataTables 9.x](https://github.com/yajra/laravel-datatables)
 - [jQuery DataTables v1.10.x](http://datatables.net/)
 
@@ -95,6 +96,16 @@ Column::make('mobile')->exportFormat('00000000000'),
 ```
 
 The format above will treat mobile numbers as text with leading zeroes.
+
+## Numeric Fields Formatting
+
+The package will auto-detect numeric fields and can be used with custom formats.
+
+```phpt
+Column::make('total')->exportFormat('0.00'),
+Column::make('count')->exportFormat('#,##0'),
+Column::make('average')->exportFormat('#,##0.00),
+```
 
 ## Date Fields Formatting
 

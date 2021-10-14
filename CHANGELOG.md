@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.6.0 - 10-13-2021
+
+- Use box/spout instead of Laravel Excel. #13
+- Add support for number format and text with leading zeroes.
+
 ## v0.5.2 - 10-13-2021
 
 - Fix export when used with Eloquent Builder. #12
