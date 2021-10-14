@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 
-## v0.6.1 - 10-13-2021
+## v0.6.1 - 10-14-2021
 
 - Fix export title, strip html tags.
 - Use CellTypeHelper to determine date values.
