@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v0.6.1 - 10-13-2021
+
+- Fix export title, strip html tags.
+- Use CellTypeHelper to determine date values.
+
 ## v0.6.0 - 10-13-2021
 
 - Use box/spout instead of Laravel Excel. #13
