@@ -30,7 +30,7 @@ class DataTablesPurgeExportCommand extends Command
     {
         collect(Storage::listContents('exports'))
             ->each(function ($file) {
-                if ($file['timestamp'] < now()->subDay(1)->getTimestamp()) {
+                if ($file['timestamp'] < now()->subDay(config('datatables-export.purge.days'))->getTimestamp()) {
                     Storage::delete($file['path']);
                 }
             });

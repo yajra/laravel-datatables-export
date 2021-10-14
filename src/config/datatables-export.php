@@ -35,5 +35,12 @@ return [
         NumberFormat::FORMAT_DATE_XLSX17,
         NumberFormat::FORMAT_DATE_YYYYMMDD2,
         NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
-    ]
+    ],
+
+    /**
+     * Purge all exported by purge.days old files.
+     */
+    'purge' => [
+        'days' => 1,
+    ],
 ];
