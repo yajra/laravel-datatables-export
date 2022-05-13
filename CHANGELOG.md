@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.7.0 - 05-13-2022
+
+- Add support for L9
+
 ## v0.6.1 - 10-14-2021
 
 - Fix export title, strip html tags.
