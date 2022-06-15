@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -80,11 +81,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             )
         );
 
-        foreach ($dataTable->getFilteredQuery()->cursor() as $row) {
+        foreach ($dataTable->getFilteredQuery()->lazy() as $row) {
             $cells = collect();
             $columns->map(function (Column $column, $index) use ($row, $cells) {
                 $property = $column['data'];
-                $value = $row->{$property} ?? '';
+                $value = Arr::get($row, $property, '');
 
                 if (CellTypeHelper::isDateTimeOrDateInterval($value) || $this->wantsDateFormat($column)) {
                     $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
