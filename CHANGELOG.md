@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.7.1 - 06-15-2022
+
+- Use lazy to fix support with eager loaded relations.
+
 ## v0.7.0 - 05-13-2022
 
 - Add support for L9
