@@ -48,13 +48,13 @@ php artisan migrate
 
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
-```phpt
+```php
 <livewire:export-button :table-id="$dataTable->getTableId()" />
 ```
 
 2. On your `DataTable` class, use `WithExportQueue`
 
-```phpt
+```php
 use Yajra\DataTables\WithExportQueue;
 
 class PermissionsDataTable extends DataTable
@@ -71,7 +71,7 @@ class PermissionsDataTable extends DataTable
 
 On `app\Console\Kernel.php`, register the purge command
 
-```phpt
+```php
 $schedule->command('datatables:purge-export')->weekly();
 ```
 
@@ -79,7 +79,7 @@ $schedule->command('datatables:purge-export')->weekly();
 
 You can set the export filename by setting the property.
 
-```phpt
+```php
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv" />
 
@@ -90,7 +90,7 @@ You can set the export filename by setting the property.
 
 You can set the export type by setting the property to `csv` or `xlsx`. Default value is `xlsx`.
 
-```phpt
+```php
 <livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
 ```
@@ -99,7 +99,7 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 
 You can format the column by setting it via Column definition on you DataTable service class.
 
-```phpt
+```php
 Column::make('mobile')->exportFormat('00000000000'),
 ```
 
@@ -109,7 +109,7 @@ The format above will treat mobile numbers as text with leading zeroes.
 
 The package will auto-detect numeric fields and can be used with custom formats.
 
-```phpt
+```php
 Column::make('total')->exportFormat('0.00'),
 Column::make('count')->exportFormat('#,##0'),
 Column::make('average')->exportFormat('#,##0.00),
@@ -119,7 +119,7 @@ Column::make('average')->exportFormat('#,##0.00),
 
 The package will auto-detect date fields when used with a valid format or is a DateTime instance.
 
-```phpt
+```php
 Column::make('report_date')->exportFormat('mm/dd/yyyy'),
 Column::make('created_at'),
 Column::make('updated_at')->exportFormat(NumberFormat::FORMAT_DATE_DATETIME),
@@ -129,7 +129,7 @@ Column::make('updated_at')->exportFormat(NumberFormat::FORMAT_DATE_DATETIME),
 
 Valid date formats can be adjusted on `datatables-export.php` config file.
 
-```phpt
+```php
     'date_formats' => [
         'mm/dd/yyyy',
         NumberFormat::FORMAT_DATE_DATETIME,
