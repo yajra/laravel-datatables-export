@@ -1,6 +1,6 @@
 # Laravel DataTables Export Plugin
 
-[![Laravel 8.x](https://img.shields.io/badge/Laravel-8.x-orange.svg)](http://laravel.com)
+[![Laravel 8|9](https://img.shields.io/badge/Laravel-8|9-orange.svg)](http://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![Build Status](https://travis-ci.org/yajra/laravel-datatables-export.svg?branch=master)](https://travis-ci.org/yajra/laravel-datatables-export)
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
@@ -11,7 +11,7 @@ This package is a plugin of [Laravel DataTables](https://github.com/yajra/larave
 ## Requirements
 
 - [PHP >=7.4](http://php.net/)
-- [Laravel 8.x](https://github.com/laravel/framework)
+- [Laravel 8+](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
 - [Spout](https://github.com/box/spout)
 - [Laravel DataTables 9.x](https://github.com/yajra/laravel-datatables)
@@ -20,10 +20,6 @@ This package is a plugin of [Laravel DataTables](https://github.com/yajra/larave
 ## Documentations
 
 - [Laravel DataTables Documentation](http://yajrabox.com/docs/laravel-datatables)
-
-## NOTE
-
-This version is still on experimental stage.
 
 ## Quick Installation
 
