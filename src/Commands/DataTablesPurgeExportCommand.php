@@ -30,10 +30,11 @@ class DataTablesPurgeExportCommand extends Command
     public function handle()
     {
         $exportPath = config('datatables-export.path', storage_path('app/exports'));
+        $timestamp = now()->subDay(config('datatables-export.purge.days'))->getTimestamp();
 
         collect(File::allFiles($exportPath))
-            ->each(function (SplFileInfo $file) {
-                if ($file->getMTime() < now()->subDay(config('datatables-export.purge.days'))->getTimestamp()) {
+            ->each(function (SplFileInfo $file) use ($timestamp) {
+                if ($file->getMTime() < $timestamp && in_array(strtolower($file->getExtension()), ['xlsx', 'csv'])) {
                     File::delete($file->getRealPath());
                 }
             });
