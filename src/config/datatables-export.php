@@ -5,6 +5,20 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 return [
 
     /**
+     * Method to use to iterate with the query results.
+     * Options: lazy, cursor
+     *
+     * @link https://laravel.com/docs/eloquent#cursors
+     * @link https://laravel.com/docs/eloquent#chunking-using-lazy-collections
+     */
+    'method' => 'lazy',
+
+    /**
+     * Count chunks to be used when using lazy method.
+     */
+    'chunk' => 1000,
+
+    /**
      * Default export format for date.
      */
     'default_date_format' => 'yyyy-mm-dd',

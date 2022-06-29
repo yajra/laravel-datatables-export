@@ -81,9 +81,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             )
         );
 
-        foreach ($dataTable->getFilteredQuery()->lazy() as $row) {
+        if (config('datatables-export.method', 'lazy') === 'lazy') {
+            $query = $dataTable->getFilteredQuery()->lazy(config('datatables-export.chunk', 1000));
+        } else {
+            $query = $dataTable->getFilteredQuery()->cursor();
+        }
+
+        foreach ($query as $row) {
             $cells = collect();
-            $columns->map(function (Column $column, $index) use ($row, $cells) {
+            $columns->map(function (Column $column) use ($row, $cells) {
                 $property = $column['data'];
                 $value = Arr::get($row, $property, '');
 
