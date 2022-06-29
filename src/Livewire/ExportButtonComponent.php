@@ -48,7 +48,9 @@ class ExportButtonComponent extends Component
 
     public function downloadExport()
     {
-        return Storage::download('exports/'.$this->batchJobId.'.'.$this->getType(), $this->getFilename());
+        $disk = config('datatables-export.disk', 'local');
+
+        return Storage::disk($disk)->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 
     public function render()

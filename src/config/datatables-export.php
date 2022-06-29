@@ -30,13 +30,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Export path
+    | Export filesystem disk
     |--------------------------------------------------------------------------
     |
-    | Export path where generated files will be stored.
+    | Export filesystem disk where generated files will be stored.
     |
     */
-    'path' => storage_path('app/exports'),
+    'disk' => 'local',
 
     /*
     |--------------------------------------------------------------------------

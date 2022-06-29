@@ -17,8 +17,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Yajra\DataTables\Exceptions\Exception;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -74,15 +76,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $exportPath = config('datatables-export.path', storage_path('app/exports'));
-
-        if (! File::isDirectory($exportPath)) {
-            File::makeDirectory($exportPath);
-        }
-
         $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
+        $disk = config('datatables-export.disk', 'local');
+        $filename = $this->batchId.'.'.$type;
+
+        $path = Storage::disk($disk)->path($filename);
+
         $writer = WriterEntityFactory::createWriter($type);
-        $writer->openToFile($exportPath.'/'.$this->batchId.'.'.$type);
+        $writer->openToFile($path);
 
         $columns = $oTable->html()->getColumns()->filter->exportable;
         $writer->addRow(
