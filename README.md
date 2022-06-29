@@ -67,6 +67,14 @@ class PermissionsDataTable extends DataTable
 
 3. Run your queue worker. Ex: `php artisan queue:work`
 
+## Purging exported files
+
+On `app\Console\Kernel.php`, register the purge command
+
+```phpt
+$schedule->command('datatables:purge-export')->weekly();
+```
+
 ## Export Filename
 
 You can set the export filename by setting the property.
