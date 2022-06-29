@@ -3,7 +3,8 @@
 namespace Yajra\DataTables\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
 
 class DataTablesPurgeExportCommand extends Command
 {
@@ -28,10 +29,12 @@ class DataTablesPurgeExportCommand extends Command
      */
     public function handle()
     {
-        collect(Storage::listContents('exports'))
-            ->each(function ($file) {
-                if ($file['timestamp'] < now()->subDay(config('datatables-export.purge.days'))->getTimestamp()) {
-                    Storage::delete($file['path']);
+        $exportPath = config('datatables-export.path', storage_path('app/exports'));
+
+        collect(File::allFiles($exportPath))
+            ->each(function (SplFileInfo $file) {
+                if ($file->getMTime() < now()->subDay(config('datatables-export.purge.days'))->getTimestamp()) {
+                    File::delete($file->getRealPath());
                 }
             });
 
