@@ -74,7 +74,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $exportPath = storage_path('app/exports');
+        $exportPath = config('datatables-export.path', storage_path('app/exports'));
 
         if (! File::isDirectory($exportPath)) {
             File::makeDirectory($exportPath);
