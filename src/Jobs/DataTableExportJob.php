@@ -16,8 +16,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Yajra\DataTables\Exceptions\Exception;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -53,6 +56,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * Execute the job.
      *
      * @return void
+     * @throws \Box\Spout\Common\Exception\IOException
+     * @throws \Box\Spout\Common\Exception\UnsupportedTypeException
+     * @throws \Box\Spout\Writer\Exception\WriterNotOpenedException
      */
     public function handle()
     {
@@ -71,19 +77,30 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable->skipPaging();
 
         $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
+        $disk = config('datatables-export.disk', 'local');
+        $filename = $this->batchId.'.'.$type;
+
+        $path = Storage::disk($disk)->path($filename);
+
         $writer = WriterEntityFactory::createWriter($type);
-        $writer->openToFile(storage_path('app/exports/' . $this->batchId . '.' . $type));
+        $writer->openToFile($path);
 
         $columns = $oTable->html()->getColumns()->filter->exportable;
         $writer->addRow(
             WriterEntityFactory::createRowFromArray(
-                $columns->map(fn($column) => strip_tags($column['title']))->toArray()
+                $columns->map(fn ($column) => strip_tags($column['title']))->toArray()
             )
         );
 
-        foreach ($dataTable->getFilteredQuery()->lazy() as $row) {
+        if (config('datatables-export.method', 'lazy') === 'lazy') {
+            $query = $dataTable->getFilteredQuery()->lazy(config('datatables-export.chunk', 1000));
+        } else {
+            $query = $dataTable->getFilteredQuery()->cursor();
+        }
+
+        foreach ($query as $row) {
             $cells = collect();
-            $columns->map(function (Column $column, $index) use ($row, $cells) {
+            $columns->map(function (Column $column) use ($row, $cells) {
                 $property = $column['data'];
                 $value = Arr::get($row, $property, '');
 
@@ -117,7 +134,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      */
     protected function wantsDateFormat(Column $column): bool
     {
-        if (!isset($column['exportFormat'])) {
+        if (! isset($column['exportFormat'])) {
             return false;
         }
 

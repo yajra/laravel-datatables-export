@@ -4,14 +4,58 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 return [
 
-    /**
-     * Default export format for date.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Method
+    |--------------------------------------------------------------------------
+    |
+    | Method to use to iterate with the query results.
+    | Options: lazy, cursor
+    |
+    | @link https://laravel.com/docs/eloquent#cursors
+    | @link https://laravel.com/docs/eloquent#chunking-using-lazy-collections
+    |
+    */
+    'method' => 'lazy',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chunk Size
+    |--------------------------------------------------------------------------
+    |
+    | Chunk size to be used when using lazy method.
+    |
+    */
+    'chunk' => 1000,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Export filesystem disk
+    |--------------------------------------------------------------------------
+    |
+    | Export filesystem disk where generated files will be stored.
+    |
+    */
+    'disk' => 'local',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Date Format
+    |--------------------------------------------------------------------------
+    |
+    | Default export format for date.
+    |
+    */
     'default_date_format' => 'yyyy-mm-dd',
 
-    /**
-     * List of valid date formats to be used for auto-detection.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Valid Date Formats
+    |--------------------------------------------------------------------------
+    |
+    | List of valid date formats to be used for auto-detection.
+    |
+    */
     'date_formats' => [
         'mm/dd/yyyy',
         NumberFormat::FORMAT_DATE_DATETIME,
@@ -37,9 +81,14 @@ return [
         NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
     ],
 
-    /**
-     * Purge all exported by purge.days old files.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Purge Options
+    |--------------------------------------------------------------------------
+    |
+    | Purge all exported by purge.days old files.
+    |
+    */
     'purge' => [
         'days' => 1,
     ],

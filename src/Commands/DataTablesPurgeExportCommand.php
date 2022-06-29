@@ -3,7 +3,10 @@
 namespace Yajra\DataTables\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DataTablesPurgeExportCommand extends Command
 {
@@ -28,10 +31,14 @@ class DataTablesPurgeExportCommand extends Command
      */
     public function handle()
     {
-        collect(Storage::listContents('exports'))
-            ->each(function ($file) {
-                if ($file['timestamp'] < now()->subDay(config('datatables-export.purge.days'))->getTimestamp()) {
-                    Storage::delete($file['path']);
+        $disk = config('datatables-export.disk', 'local');
+        $timestamp = now()->subDay(config('datatables-export.purge.days'))->getTimestamp();
+
+        collect(Storage::disk($disk)->files())
+            ->each(function ($file) use ($timestamp, $disk) {
+                $path = Storage::disk($disk)->path($file);
+                if (File::lastModified($path) < $timestamp && Str::endsWith(strtolower($file), ['xlsx', 'csv'])) {
+                    File::delete($path);
                 }
             });
 
