@@ -16,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yajra\DataTables\Html\Column;
@@ -53,6 +54,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * Execute the job.
      *
      * @return void
+     * @throws \Box\Spout\Common\Exception\IOException
+     * @throws \Box\Spout\Common\Exception\UnsupportedTypeException
+     * @throws \Box\Spout\Writer\Exception\WriterNotOpenedException
      */
     public function handle()
     {
@@ -70,14 +74,20 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
+        $exportPath = storage_path('app/exports');
+
+        if (! File::isDirectory($exportPath)) {
+            File::makeDirectory($exportPath);
+        }
+
         $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
         $writer = WriterEntityFactory::createWriter($type);
-        $writer->openToFile(storage_path('app/exports/' . $this->batchId . '.' . $type));
+        $writer->openToFile($exportPath.'/'.$this->batchId.'.'.$type);
 
         $columns = $oTable->html()->getColumns()->filter->exportable;
         $writer->addRow(
             WriterEntityFactory::createRowFromArray(
-                $columns->map(fn($column) => strip_tags($column['title']))->toArray()
+                $columns->map(fn ($column) => strip_tags($column['title']))->toArray()
             )
         );
 
@@ -123,7 +133,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      */
     protected function wantsDateFormat(Column $column): bool
     {
-        if (!isset($column['exportFormat'])) {
+        if (! isset($column['exportFormat'])) {
             return false;
         }
 
