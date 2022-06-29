@@ -4,7 +4,9 @@ namespace Yajra\DataTables\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\SplFileInfo;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DataTablesPurgeExportCommand extends Command
 {
@@ -29,13 +31,14 @@ class DataTablesPurgeExportCommand extends Command
      */
     public function handle()
     {
-        $exportPath = config('datatables-export.path', storage_path('app/exports'));
+        $disk = config('datatables-export.disk', 'local');
         $timestamp = now()->subDay(config('datatables-export.purge.days'))->getTimestamp();
 
-        collect(File::allFiles($exportPath))
-            ->each(function (SplFileInfo $file) use ($timestamp) {
-                if ($file->getMTime() < $timestamp && in_array(strtolower($file->getExtension()), ['xlsx', 'csv'])) {
-                    File::delete($file->getRealPath());
+        collect(Storage::disk($disk)->files())
+            ->each(function ($file) use ($timestamp, $disk) {
+                $path = Storage::disk($disk)->path($file);
+                if (File::lastModified($path) < $timestamp && Str::endsWith(strtolower($file), ['xlsx', 'csv'])) {
+                    File::delete($path);
                 }
             });
 
