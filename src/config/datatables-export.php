@@ -14,7 +14,7 @@ return [
     'method' => 'lazy',
 
     /**
-     * Count chunks to be used when using lazy method.
+     * Chunk size to be used when using lazy method.
      */
     'chunk' => 1000,
 
