@@ -2,6 +2,12 @@
 
 ## UNRELEASED
 
+## v0.8.0 - 06-29-2022
+
+- Add option to use cursor or lazy to iterate with the results #17
+- Fix export error when path does not exist yet
+- Fix [Feature Request] Make storage path configurable #16
+
 ## v0.7.1 - 06-15-2022
 
 - Use lazy to fix support with eager loaded relations.
