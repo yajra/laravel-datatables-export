@@ -6,14 +6,14 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
-This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, Spout and Livewire.
+This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, OpenSpout and Livewire.
 
 ## Requirements
 
 - [PHP >=7.4](http://php.net/)
 - [Laravel 8+](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
-- [Spout](https://github.com/box/spout)
+- [OpenSpout](https://github.com/openspout/openspout/)
 - [Laravel DataTables 9.x](https://github.com/yajra/laravel-datatables)
 - [jQuery DataTables v1.10.x](http://datatables.net/)
 

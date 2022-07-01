@@ -2,10 +2,10 @@
 
 namespace Yajra\DataTables\Jobs;
 
-use Box\Spout\Common\Helper\CellTypeHelper;
-use Box\Spout\Common\Type;
-use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
-use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use OpenSpout\Common\Helper\CellTypeHelper;
+use OpenSpout\Common\Type;
+use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
+use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -56,9 +56,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * Execute the job.
      *
      * @return void
-     * @throws \Box\Spout\Common\Exception\IOException
-     * @throws \Box\Spout\Common\Exception\UnsupportedTypeException
-     * @throws \Box\Spout\Writer\Exception\WriterNotOpenedException
+     * @throws \OpenSpout\Common\Exception\IOException
+     * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
+     * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
      */
     public function handle()
     {
