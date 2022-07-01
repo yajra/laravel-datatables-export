@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.9.0 - 07-01-2022
+
+- Migrate to OpenSpout v3 #20
+
 ## v0.8.0 - 06-29-2022
 
 - Add option to use cursor or lazy to iterate with the results #17
