@@ -10,13 +10,19 @@ use Livewire\Component;
 class ExportButtonComponent extends Component
 {
     public $class = 'btn btn-primary';
+
     public $tableId;
+
     public $type = 'xlsx';
+
     public $filename = null;
 
     public $exporting = false;
+
     public $exportFinished = false;
+
     public $exportFailed = false;
+
     public $batchJobId = null;
 
     public function export($batchJobId)
@@ -29,7 +35,7 @@ class ExportButtonComponent extends Component
 
     public function getExportBatchProperty()
     {
-        if (!$this->batchJobId) {
+        if (! $this->batchJobId) {
             return null;
         }
 
@@ -56,7 +62,7 @@ class ExportButtonComponent extends Component
     public function render()
     {
         return view('datatables-export::export-button', [
-            'fileType' => $this->getType()
+            'fileType' => $this->getType(),
         ]);
     }
 

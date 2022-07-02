@@ -2,10 +2,6 @@
 
 namespace Yajra\DataTables\Jobs;
 
-use OpenSpout\Common\Helper\CellTypeHelper;
-use OpenSpout\Common\Type;
-use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -16,11 +12,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use OpenSpout\Common\Helper\CellTypeHelper;
+use OpenSpout\Common\Type;
+use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
+use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use Yajra\DataTables\Exceptions\Exception;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -33,8 +31,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     use Batchable;
 
     private string $dataTable;
+
     private array $attributes;
+
     private array $request;
+
     private $user;
 
     /**
@@ -56,6 +57,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * Execute the job.
      *
      * @return void
+     *
      * @throws \OpenSpout\Common\Exception\IOException
      * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
      * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
