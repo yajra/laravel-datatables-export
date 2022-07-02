@@ -101,8 +101,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         foreach ($query as $row) {
-            $cells = collect();
-            $columns->map(function (Column $column) use ($row, $cells) {
+            $cells = [];
+            $columns->map(function (Column $column) use ($row, &$cells) {
                 $property = $column['data'];
                 $value = Arr::get($row, $property, '');
 
@@ -111,9 +111,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
                     $format = $column['exportFormat'] ?? $defaultDateFormat;
 
-                    $cells->push(
-                        WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build())
-                    );
+                    $cells[] = WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build());
                 } else {
                     $format = $column['exportFormat']
                         ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
@@ -121,11 +119,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
                     $value = $this->isNumeric($value) ? (float) $value : $value;
 
-                    $cells->push(WriterEntityFactory::createCell($value, $format));
+                    $cells[] = WriterEntityFactory::createCell($value, $format);
                 }
             });
 
-            $writer->addRow(WriterEntityFactory::createRow($cells->toArray()));
+            $writer->addRow(WriterEntityFactory::createRow($cells));
+            unset($cells);
         }
         $writer->close();
     }
