@@ -37,6 +37,14 @@
       "Yajra\\DataTables\\Exports\\Tests\\": "tests/"
     }
   },
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "platform": {
+      "php": "8.0.2"
+    }
+  },
   "extra": {
     "branch-alias": {
       "dev-master": "1.0-dev"

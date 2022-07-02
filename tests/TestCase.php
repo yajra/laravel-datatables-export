@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
         $this->seedDatabase();
     }
 
-    protected function migrateDatabase()
+    protected function migrateDatabase(): void
     {
         /** @var \Illuminate\Database\Schema\Builder $schemaBuilder */
         $schemaBuilder = $this->app['db']->connection()->getSchemaBuilder();
@@ -84,17 +84,17 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    protected function seedDatabase()
+    protected function seedDatabase(): void
     {
-        $adminRole = Role::create(['role' => 'Administrator']);
-        $userRole = Role::create(['role' => 'User']);
-        $animal = AnimalUser::create(['name' => 'Animal']);
-        $human = HumanUser::create(['name' => 'Human']);
+        $adminRole = Role::query()->create(['role' => 'Administrator']);
+        $userRole = Role::query()->create(['role' => 'User']);
+        $animal = AnimalUser::query()->create(['name' => 'Animal']);
+        $human = HumanUser::query()->create(['name' => 'Human']);
 
         collect(range(1, 20))->each(function ($i) use ($userRole, $animal, $human) {
             /** @var User $user */
             $user = User::query()->create([
-                'name'  => 'Record-'.$i,
+                'name' => 'Record-'.$i,
                 'email' => 'Email-'.$i.'@example.com',
             ]);
 
@@ -128,9 +128,9 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('app.debug', true);
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
     }
 
