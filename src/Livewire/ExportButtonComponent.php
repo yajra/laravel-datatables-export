@@ -11,7 +11,7 @@ use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * @property Batch|null $exportBatch
+ * @property Batch $exportBatch
  */
 class ExportButtonComponent extends Component
 {
@@ -21,7 +21,7 @@ class ExportButtonComponent extends Component
 
     public string $type = 'xlsx';
 
-    public ?string $filename = null;
+    public string $filename = '';
 
     public bool $exporting = false;
 
@@ -74,13 +74,13 @@ class ExportButtonComponent extends Component
         return $this->type == 'csv' ? 'csv' : 'xlsx';
     }
 
-    protected function getFilename(): ?string
+    protected function getFilename(): string
     {
-        if (Str::endsWith($this->filename, ['csv', 'xlsx'])) {
+        if (Str::endsWith(Str::lower($this->filename), ['csv', 'xlsx'])) {
             return $this->filename;
         }
 
-        return null;
+        return Str::random().'.'.$this->getType();
     }
 
     public function render(): Renderable
