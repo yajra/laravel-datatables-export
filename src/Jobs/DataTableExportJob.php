@@ -38,9 +38,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     /**
      * Create a new job instance.
      *
-     * @param array $dataTable
-     * @param array $request
-     * @param null $user
+     * @param  array  $dataTable
+     * @param  array  $request
+     * @param  null  $user
      */
     public function __construct(array $dataTable, array $request, $user = null)
     {
@@ -76,7 +76,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
         $disk = config('datatables-export.disk', 'local');
-        $filename = $this->batchId . '.' . $type;
+        $filename = $this->batchId.'.'.$type;
 
         $path = Storage::disk($disk)->path($filename);
 
@@ -86,7 +86,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $columns = $oTable->html()->getColumns()->filter->exportable;
         $writer->addRow(
             WriterEntityFactory::createRowFromArray(
-                $columns->map(fn($column) => strip_tags($column['title']))->toArray()
+                $columns->map(fn ($column) => strip_tags($column['title']))->toArray()
             )
         );
 
@@ -110,18 +110,21 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $cells->push(
                         WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build())
                     );
-                } else if ($this->wantsText($column)) {
-                    $cells->push(
-                        WriterEntityFactory::createCell($value, (new StyleBuilder)->setFormat($column['exportFormat'])->build())
-                    );
                 } else {
-                    $format = $column['exportFormat']
-                        ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
-                        : null;
+                    if ($this->wantsText($column)) {
+                        $cells->push(
+                            WriterEntityFactory::createCell($value,
+                                (new StyleBuilder)->setFormat($column['exportFormat'])->build())
+                        );
+                    } else {
+                        $format = $column['exportFormat']
+                            ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
+                            : null;
 
-                    $value = $this->isNumeric($value) ? (float)$value : $value;
+                        $value = $this->isNumeric($value) ? (float) $value : $value;
 
-                    $cells->push(WriterEntityFactory::createCell($value, $format));
+                        $cells->push(WriterEntityFactory::createCell($value, $format));
+                    }
                 }
             });
 
@@ -131,7 +134,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param \Yajra\DataTables\Html\Column $column
+     * @param  \Yajra\DataTables\Html\Column  $column
      * @return bool
      */
     protected function wantsDateFormat(Column $column): bool
@@ -144,7 +147,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param mixed $value
+     * @param  mixed  $value
      * @return bool
      */
     protected function isNumeric($value): bool
@@ -158,7 +161,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param \Yajra\DataTables\Html\Column $column
+     * @param  \Yajra\DataTables\Html\Column  $column
      * @return bool
      */
     protected function wantsText(Column $column): bool
