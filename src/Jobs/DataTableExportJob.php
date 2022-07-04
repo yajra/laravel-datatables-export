@@ -138,7 +138,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
                 switch (true) {
                     case $this->wantsText($column):
-                        $cellValue = $value;
+                        $cellValue = strval($value);
                         $format = $column->exportFormat ?? '@';
                         break;
                     case $this->wantsDateFormat($column):
