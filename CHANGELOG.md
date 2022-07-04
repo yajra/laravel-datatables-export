@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.10.0 - 07-05-2022
+
+- Add ability to force cell as text. #22
+
 ## v0.9.0 - 07-01-2022
 
 - Migrate to OpenSpout v3 #20
