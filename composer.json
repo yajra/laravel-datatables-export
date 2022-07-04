@@ -20,7 +20,8 @@
     "php": ">=7.4|8.*",
     "yajra/laravel-datatables-buttons": "4.*|9.*",
     "livewire/livewire": "2.*|3.*",
-    "openspout/openspout": "^3"
+    "openspout/openspout": "^3",
+    "ext-json": "*"
   },
   "require-dev": {
     "maatwebsite/excel": "^3.1.40",

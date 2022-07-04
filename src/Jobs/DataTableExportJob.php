@@ -124,8 +124,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $row = (array) $row;
                 }
 
-                /** @var int|bool|string|null $value */
+                /** @var array|bool|int|string|null $value */
                 $value = Arr::get($row, $property, '');
+
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
 
                 /** @var string $defaultDateFormat */
                 $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
