@@ -170,6 +170,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             return false;
         }
 
-        return in_array($column['exportFormat'], config('datatables-export.text_formats', []));
+        return in_array($column['exportFormat'], config('datatables-export.text_formats', ['@']));
     }
 }
