@@ -2,7 +2,16 @@
 
 ## UNRELEASED
 
-## v0.10.0 - 07-05-2022
+## v0.11.0 - 07-04-2022
+
+- Add github actions ci/cd #21
+- Add phpstan 
+- Add php-cs-fixer 
+- Add basic tests 
+- Fix prioritization of expected formats 
+- Fix days old purge config is always 1 day
+
+## v0.10.0 - 07-04-2022
 
 - Add ability to force cell as text. #22
 
