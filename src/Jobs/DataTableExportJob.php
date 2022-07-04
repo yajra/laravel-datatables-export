@@ -20,6 +20,7 @@ use OpenSpout\Common\Type;
 use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -123,28 +124,28 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $row = (array) $row;
                 }
 
+                /** @var int|bool|string|null $value */
                 $value = Arr::get($row, $property, '');
 
+                /** @var string $defaultDateFormat */
                 $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
-                $format = $column->exportFormat ?? $defaultDateFormat;
-                $cellValue = '';
 
                 switch (true) {
                     case CellTypeHelper::isDateTimeOrDateInterval($value):
                         $cellValue = $value;
+                        $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     case $this->wantsDateFormat($column) && is_string($value):
-                        $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
-                        $cells[] = WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build());
+                        $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
+                        $format = $column->exportFormat ?? $defaultDateFormat;
+                        break;
+                    case $this->wantsText($column):
+                        $cellValue = $value;
+                        $format = $column->exportFormat ?? '@';
                         break;
                     default:
-                        $format = $column->exportFormat
-                            ? (new StyleBuilder)->setFormat($column->exportFormat)->build()
-                            : null;
-
-                        $value = $this->isNumeric($value) ? (float) $value : $value;
-
-                        $cells[] = WriterEntityFactory::createCell($value, $format);
+                        $cellValue = $this->isNumeric($value) ? (float) $value : $value;
+                        $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 
                 $cells[] = WriterEntityFactory::createCell($cellValue, (new StyleBuilder)->setFormat($format)->build());
@@ -156,12 +157,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param  \Yajra\DataTables\Services\DataTable  $oTable
+     * @param  \Yajra\DataTables\Services\DataTable  $dataTable
      * @return \Illuminate\Support\Collection<array-key, Column>
      */
-    protected function getExportableColumns(DataTable $oTable): Collection
+    protected function getExportableColumns(DataTable $dataTable): Collection
     {
-        $columns = $oTable->html()->getColumns();
+        $columns = $dataTable->html()->getColumns();
 
         return $columns->filter(fn (Column $column) => $column->exportable);
     }
@@ -176,20 +177,36 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             return false;
         }
 
-        return in_array($column['exportFormat'], config('datatables-export.date_formats', []));
+        /** @var array $formats */
+        $formats = config('datatables-export.date_formats', []);
+
+        return in_array($column['exportFormat'], $formats);
     }
 
     /**
-     * @param  mixed  $value
+     * @param  int|bool|string|null  $value
      * @return bool
      */
     protected function isNumeric($value): bool
     {
         // Skip numeric style if value has leading zeroes.
-        if (Str::startsWith($value, '0')) {
+        if (Str::startsWith((string) $value, '0')) {
             return false;
         }
 
         return is_numeric($value);
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsText(Column $column): bool
+    {
+        if (! isset($column['exportFormat'])) {
+            return false;
+        }
+
+        return in_array($column['exportFormat'], (array) config('datatables-export.text_formats', ['@']));
     }
 }

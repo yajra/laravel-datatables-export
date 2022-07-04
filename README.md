@@ -108,7 +108,7 @@ The package will auto-detect numeric fields and can be used with custom formats.
 ```php
 Column::make('total')->exportFormat('0.00'),
 Column::make('count')->exportFormat('#,##0'),
-Column::make('average')->exportFormat('#,##0.00),
+Column::make('average')->exportFormat('#,##0.00'),
 ```
 
 ## Date Fields Formatting
@@ -150,6 +150,16 @@ Valid date formats can be adjusted on `datatables-export.php` config file.
         NumberFormat::FORMAT_DATE_YYYYMMDD2,
         NumberFormat::FORMAT_DATE_YYYYMMDDSLASH,
     ]
+```
+
+## Force Numeric Field As Text Format
+
+Option to force auto-detected numeric value as text format.
+
+```php
+Column::make('id')->exportFormat('@'),
+Column::make('id')->exportFormat(NumberFormat::FORMAT_GENERAL),
+Column::make('id')->exportFormat(NumberFormat::FORMAT_TEXT),
 ```
 
 ## Contributing
