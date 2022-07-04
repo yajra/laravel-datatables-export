@@ -82,8 +82,13 @@ return [
     ],
 
     /*
-     * List of valid text formats to be used.
-     */
+    |--------------------------------------------------------------------------
+    | Valid Text Formats
+    |--------------------------------------------------------------------------
+    |
+    | List of valid text formats to be used.
+    |
+    */
     'text_formats' => [
         '@',
         NumberFormat::FORMAT_GENERAL,
