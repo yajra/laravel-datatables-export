@@ -60,9 +60,8 @@ class ExportButtonComponent extends Component
 
     public function downloadExport(): StreamedResponse
     {
-        $disk = config('datatables-export.disk', 'local');
-
-        return Storage::disk($disk)->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
+        return Storage::disk($this->getDisk())
+                      ->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 
     protected function getType(): string
@@ -88,5 +87,13 @@ class ExportButtonComponent extends Component
         return view('datatables-export::export-button', [
             'fileType' => $this->getType(),
         ]);
+    }
+
+    protected function getDisk(): string
+    {
+        /** @var string $disk */
+        $disk = config('datatables-export.disk', 'local');
+
+        return $disk;
     }
 }

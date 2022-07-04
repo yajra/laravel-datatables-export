@@ -5,6 +5,9 @@ namespace Yajra\DataTables;
 use Illuminate\Support\Facades\Bus;
 use Yajra\DataTables\Jobs\DataTableExportJob;
 
+/**
+ * @mixin \Yajra\DataTables\Services\DataTable
+ */
 trait WithExportQueue
 {
     /**
@@ -14,10 +17,12 @@ trait WithExportQueue
      * @param  array  $data
      * @param  array  $mergeData
      * @return mixed
+     *
+     * @throws \Throwable
      */
-    public function render($view, $data = [], $mergeData = [])
+    public function render(string $view, array $data = [], array $mergeData = [])
     {
-        if (! $this->request()->wantsJson() && $this->request()->get('action') == 'exportQueue') {
+        if (! request()->wantsJson() && request('action') == 'exportQueue') {
             return $this->exportQueue();
         }
 
@@ -26,6 +31,8 @@ trait WithExportQueue
 
     /**
      * Create and run batch job.
+     *
+     * @return string
      *
      * @throws \Throwable
      */

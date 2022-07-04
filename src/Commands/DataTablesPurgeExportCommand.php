@@ -30,8 +30,12 @@ class DataTablesPurgeExportCommand extends Command
      */
     public function handle()
     {
+        /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
-        $daysOld = config('datatables-export.purge.days');
+
+        /** @var int $daysOld */
+        $daysOld = config('datatables-export.purge.days', 1);
+
         $timestamp = now()->subDays($daysOld)->getTimestamp();
 
         collect(Storage::disk($disk)->files())

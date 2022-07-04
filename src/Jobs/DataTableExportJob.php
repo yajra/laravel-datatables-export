@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -30,27 +31,27 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     use SerializesModels;
     use Batchable;
 
-    private string $dataTable;
+    public string $dataTable;
 
-    private array $attributes;
+    public array $attributes;
 
-    private array $request;
+    public array $request;
 
-    private int $user;
+    public int $user;
 
     /**
      * Create a new job instance.
      *
      * @param  array  $dataTable
      * @param  array  $request
-     * @param  int  $user
+     * @param  ?int  $user
      */
-    public function __construct(array $dataTable, array $request, int $user = 0)
+    public function __construct(array $dataTable, array $request, ?int $user)
     {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
         $this->request = $request;
-        $this->user = $user;
+        $this->user = $user ?? 0;
     }
 
     /**
@@ -78,8 +79,13 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $type = Str::startsWith(request('exportType'), Type::CSV) ? Type::CSV : Type::XLSX;
+        /** @var string $exportType */
+        $exportType = request('exportType');
+
+        /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
+
+        $type = Str::startsWith($exportType, Type::CSV) ? Type::CSV : Type::XLSX;
         $filename = $this->batchId.'.'.$type;
 
         $path = Storage::disk($disk)->path($filename);
@@ -87,15 +93,18 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $writer = WriterEntityFactory::createWriter($type);
         $writer->openToFile($path);
 
-        $columns = $oTable->html()->getColumns()->filter->exportable;
+        $columns = $this->getExportableColumns($oTable);
         $writer->addRow(
             WriterEntityFactory::createRowFromArray(
-                $columns->map(fn ($column) => strip_tags($column['title']))->toArray()
+                $columns->map(fn (Column $column) => strip_tags($column->title))->toArray()
             )
         );
 
         if (config('datatables-export.method', 'lazy') === 'lazy') {
-            $query = $dataTable->getFilteredQuery()->lazy(config('datatables-export.chunk', 1000));
+            /** @var int $chunkSize */
+            $chunkSize = config('datatables-export.chunk', 1000);
+
+            $query = $dataTable->getFilteredQuery()->lazy($chunkSize);
         } else {
             $query = $dataTable->getFilteredQuery()->cursor();
         }
@@ -103,30 +112,58 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         foreach ($query as $row) {
             $cells = [];
             $columns->map(function (Column $column) use ($row, &$cells) {
-                $property = $column['data'];
+                $property = $column->data;
+
+                /* Handles orthogonal data */
+                if (is_array($property)) {
+                    $property = $property['_'] ?? $column->name;
+                }
+
+                if (! is_array($row)) {
+                    $row = (array) $row;
+                }
+
                 $value = Arr::get($row, $property, '');
 
-                if (CellTypeHelper::isDateTimeOrDateInterval($value) || $this->wantsDateFormat($column)) {
-                    $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
-                    $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
-                    $format = $column['exportFormat'] ?? $defaultDateFormat;
+                $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
+                $format = $column->exportFormat ?? $defaultDateFormat;
+                $cellValue = '';
 
-                    $cells[] = WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build());
-                } else {
-                    $format = $column['exportFormat']
-                        ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
-                        : null;
+                switch (true) {
+                    case CellTypeHelper::isDateTimeOrDateInterval($value):
+                        $cellValue = $value;
+                        break;
+                    case $this->wantsDateFormat($column) && is_string($value):
+                        $date = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
+                        $cells[] = WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build());
+                        break;
+                    default:
+                        $format = $column->exportFormat
+                            ? (new StyleBuilder)->setFormat($column->exportFormat)->build()
+                            : null;
 
-                    $value = $this->isNumeric($value) ? (float) $value : $value;
+                        $value = $this->isNumeric($value) ? (float) $value : $value;
 
-                    $cells[] = WriterEntityFactory::createCell($value, $format);
+                        $cells[] = WriterEntityFactory::createCell($value, $format);
                 }
+
+                $cells[] = WriterEntityFactory::createCell($cellValue, (new StyleBuilder)->setFormat($format)->build());
             });
 
             $writer->addRow(WriterEntityFactory::createRow($cells));
-            unset($cells);
         }
         $writer->close();
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Services\DataTable  $oTable
+     * @return \Illuminate\Support\Collection<array-key, Column>
+     */
+    protected function getExportableColumns(DataTable $oTable): Collection
+    {
+        $columns = $oTable->html()->getColumns();
+
+        return $columns->filter(fn (Column $column) => $column->exportable);
     }
 
     /**
