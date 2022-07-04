@@ -222,7 +222,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     protected function isNumeric($value): bool
     {
         // Skip numeric style if value has leading zeroes.
-        if (Str::startsWith((string) $value, '0')) {
+        if (Str::startsWith(strval($value), '0')) {
             return false;
         }
 
