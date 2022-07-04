@@ -143,8 +143,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $cellValue = $value;
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
-                    case $this->wantsDateFormat($column) && is_string($value):
-                        $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse($value)) : '';
+                    case $this->wantsDateFormat($column):
+                        $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     default:
