@@ -7,6 +7,8 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -120,8 +122,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $property = $property['_'] ?? $column->name;
                 }
 
-                if (! is_array($row)) {
-                    $row = (array) $row;
+                if (! $row instanceof Model) {
+                    $row = $row instanceof Arrayable ? $row->toArray(): (array) $row;
                 }
 
                 /** @var array|bool|int|string|null $value */
