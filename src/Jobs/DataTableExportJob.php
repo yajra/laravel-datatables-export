@@ -139,10 +139,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $cellValue = $value;
                         $format = $column->exportFormat ?? '@';
                         break;
-                    case CellTypeHelper::isDateTimeOrDateInterval($value):
-                        $cellValue = $value;
-                        $format = $column->exportFormat ?? $defaultDateFormat;
-                        break;
                     case $this->wantsDateFormat($column):
                         $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
                         $format = $column->exportFormat ?? $defaultDateFormat;
@@ -150,6 +146,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     case $this->wantsNumeric($column):
                         $cellValue = doubleval($value);
                         $format = $column->exportFormat;
+                        break;
+                    case CellTypeHelper::isDateTimeOrDateInterval($value):
+                        $cellValue = $value;
+                        $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     default:
                         $cellValue = $this->isNumeric($value) ? doubleval($value) : $value;
