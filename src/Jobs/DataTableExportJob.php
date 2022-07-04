@@ -2,10 +2,6 @@
 
 namespace Yajra\DataTables\Jobs;
 
-use OpenSpout\Common\Helper\CellTypeHelper;
-use OpenSpout\Common\Type;
-use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -16,11 +12,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use OpenSpout\Common\Helper\CellTypeHelper;
+use OpenSpout\Common\Type;
+use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
+use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use Yajra\DataTables\Exceptions\Exception;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -113,13 +111,20 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         WriterEntityFactory::createCell($date, (new StyleBuilder)->setFormat($format)->build())
                     );
                 } else {
-                    $format = $column['exportFormat']
-                        ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
-                        : null;
+                    if ($this->wantsText($column)) {
+                        $cells->push(
+                            WriterEntityFactory::createCell($value,
+                                (new StyleBuilder)->setFormat($column['exportFormat'])->build())
+                        );
+                    } else {
+                        $format = $column['exportFormat']
+                            ? (new StyleBuilder)->setFormat($column['exportFormat'])->build()
+                            : null;
 
-                    $value = $this->isNumeric($value) ? (float) $value : $value;
+                        $value = $this->isNumeric($value) ? (float) $value : $value;
 
-                    $cells->push(WriterEntityFactory::createCell($value, $format));
+                        $cells->push(WriterEntityFactory::createCell($value, $format));
+                    }
                 }
             });
 
@@ -153,5 +158,18 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         return is_numeric($value);
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsText(Column $column): bool
+    {
+        if (! isset($column['exportFormat'])) {
+            return false;
+        }
+
+        return in_array($column['exportFormat'], config('datatables-export.text_formats', ['@']));
     }
 }
