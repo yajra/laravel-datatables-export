@@ -83,9 +83,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @param  \Illuminate\Foundation\Application  $app
      */
-    protected function getEnvironmentSetUp(
-        $app
-    ) {
+    protected function getEnvironmentSetUp($app) {
         $app['config']->set('app.debug', true);
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('database.default', 'sqlite');
@@ -98,9 +96,7 @@ abstract class TestCase extends BaseTestCase
         View::addNamespace('tests', __DIR__.'/views');
     }
 
-    protected function getPackageProviders(
-        $app
-    ): array {
+    protected function getPackageProviders($app): array {
         return [
             \Yajra\DataTables\DataTablesServiceProvider::class,
             \Yajra\DataTables\HtmlServiceProvider::class,
@@ -109,9 +105,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    protected function getPackageAliases(
-        $app
-    ): array {
+    protected function getPackageAliases($app): array {
         return [
             'DataTables' => \Yajra\DataTables\Facades\DataTables::class,
         ];
