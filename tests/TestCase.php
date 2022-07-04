@@ -3,14 +3,22 @@
 namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Yajra\DataTables\Tests\Models\AnimalUser;
-use Yajra\DataTables\Tests\Models\HumanUser;
-use Yajra\DataTables\Tests\Models\Role;
-use Yajra\DataTables\Tests\Models\User;
+use Yajra\DataTables\Exports\Tests\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {
+    public function getAjax(string $uri, array $headers = []): TestResponse
+    {
+        return $this->getJson($uri, array_merge(['X-Requested-With' => 'XMLHttpRequest'], $headers));
+    }
+
+    public function postAjax(string $uri, array $headers = []): TestResponse
+    {
+        return $this->postJson($uri, array_merge(['X-Requested-With' => 'XMLHttpRequest'], $headers));
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -86,35 +94,12 @@ abstract class TestCase extends BaseTestCase
 
     protected function seedDatabase(): void
     {
-        $adminRole = Role::query()->create(['role' => 'Administrator']);
-        $userRole = Role::query()->create(['role' => 'User']);
-        $animal = AnimalUser::query()->create(['name' => 'Animal']);
-        $human = HumanUser::query()->create(['name' => 'Human']);
-
-        collect(range(1, 20))->each(function ($i) use ($userRole, $animal, $human) {
-            /** @var User $user */
-            $user = User::query()->create([
+        collect(range(1, 20))->each(function ($i) {
+            /** @var \Yajra\DataTables\Exports\Tests\Models\User $user */
+            User::query()->create([
                 'name' => 'Record-'.$i,
                 'email' => 'Email-'.$i.'@example.com',
             ]);
-
-            collect(range(1, 3))->each(function ($i) use ($user) {
-                $user->posts()->create([
-                    'title' => "User-{$user->id} Post-{$i}",
-                ]);
-            });
-
-            $user->heart()->create([
-                'size' => 'heart-'.$user->id,
-            ]);
-
-            if ($i % 2) {
-                $user->roles()->attach(Role::all());
-                $human->users()->save($user);
-            } else {
-                $user->roles()->attach($userRole);
-                $animal->users()->save($user);
-            }
         });
     }
 
@@ -138,6 +123,8 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             \Yajra\DataTables\DataTablesServiceProvider::class,
+            \Yajra\DataTables\HtmlServiceProvider::class,
+            \Yajra\DataTables\ButtonsServiceProvider::class,
             \Yajra\DataTables\ExportServiceProvider::class,
         ];
     }
