@@ -22,7 +22,7 @@ trait WithExportQueue
      */
     public function render(string $view, array $data = [], array $mergeData = [])
     {
-        if (! request()->wantsJson() && request('action') == 'exportQueue') {
+        if (request('action') == 'exportQueue') {
             return $this->exportQueue();
         }
 

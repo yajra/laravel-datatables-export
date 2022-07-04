@@ -3,6 +3,7 @@
 namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Exports\Tests\DataTables\UsersDataTable;
 
 class ExportTest extends TestCase
@@ -12,8 +13,10 @@ class ExportTest extends TestCase
     /** @test */
     public function it_can_export_to_excel(): void
     {
-        $this->getAjax('/users')
-             ->assertOk();
+        $this->get('/users')->assertOk();
+        $batchId = $this->getAjax('/users?action=exportQueue')->getContent();
+
+        $this->assertTrue(DB::table('job_batches')->where('id', $batchId)->exists());
     }
 
     protected function setUp(): void
@@ -22,7 +25,7 @@ class ExportTest extends TestCase
 
         $router = $this->app['router'];
         $router->get('/users', function (UsersDataTable $dataTable) {
-            return $dataTable->render('test::users');
+            return $dataTable->render('tests::users');
         });
     }
 }

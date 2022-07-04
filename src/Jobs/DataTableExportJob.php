@@ -123,7 +123,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 }
 
                 if (! $row instanceof Model) {
-                    $row = $row instanceof Arrayable ? $row->toArray(): (array) $row;
+                    $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
                 }
 
                 /** @var array|bool|int|string|null $value */
@@ -146,7 +146,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     case $this->wantsNumeric($column):
-                        $cellValue = doubleval($value);
+                        $cellValue = floatval($value);
                         $format = $column->exportFormat;
                         break;
                     case CellTypeHelper::isDateTimeOrDateInterval($value):
@@ -154,7 +154,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     default:
-                        $cellValue = $this->isNumeric($value) ? doubleval($value) : $value;
+                        $cellValue = $this->isNumeric($value) ? floatval($value) : $value;
                         $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 

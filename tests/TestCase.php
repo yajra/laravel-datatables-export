@@ -3,6 +3,7 @@
 namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\View;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Yajra\DataTables\Exports\Tests\Models\User;
@@ -51,43 +52,18 @@ abstract class TestCase extends BaseTestCase
                 $table->softDeletes();
             });
         }
-        if (! $schemaBuilder->hasTable('hearts')) {
-            $schemaBuilder->create('hearts', function (Blueprint $table) {
-                $table->increments('id');
-                $table->unsignedInteger('user_id');
-                $table->string('size');
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-        if (! $schemaBuilder->hasTable('roles')) {
-            $schemaBuilder->create('roles', function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('role');
-                $table->timestamps();
-            });
-        }
-        if (! $schemaBuilder->hasTable('role_user')) {
-            $schemaBuilder->create('role_user', function (Blueprint $table) {
-                $table->unsignedInteger('role_id');
-                $table->unsignedInteger('user_id');
-                $table->timestamps();
-            });
-        }
-        if (! $schemaBuilder->hasTable('animal_users')) {
-            $schemaBuilder->create('animal_users', function (Blueprint $table) {
-                $table->increments('id');
+        if (! $schemaBuilder->hasTable('job_batches')) {
+            $schemaBuilder->create('job_batches', function (Blueprint $table) {
+                $table->string('id')->primary();
                 $table->string('name');
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-        if (! $schemaBuilder->hasTable('human_users')) {
-            $schemaBuilder->create('human_users', function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('name');
-                $table->timestamps();
-                $table->softDeletes();
+                $table->integer('total_jobs');
+                $table->integer('pending_jobs');
+                $table->integer('failed_jobs');
+                $table->text('failed_job_ids');
+                $table->mediumText('options')->nullable();
+                $table->integer('cancelled_at')->nullable();
+                $table->integer('created_at');
+                $table->integer('finished_at')->nullable();
             });
         }
     }
@@ -95,7 +71,6 @@ abstract class TestCase extends BaseTestCase
     protected function seedDatabase(): void
     {
         collect(range(1, 20))->each(function ($i) {
-            /** @var \Yajra\DataTables\Exports\Tests\Models\User $user */
             User::query()->create([
                 'name' => 'Record-'.$i,
                 'email' => 'Email-'.$i.'@example.com',
@@ -108,19 +83,24 @@ abstract class TestCase extends BaseTestCase
      *
      * @param  \Illuminate\Foundation\Application  $app
      */
-    protected function getEnvironmentSetUp($app)
-    {
+    protected function getEnvironmentSetUp(
+        $app
+    ) {
         $app['config']->set('app.debug', true);
+        $app['config']->set('queue.default', 'sync');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
         ]);
+
+        View::addNamespace('tests', __DIR__.'/views');
     }
 
-    protected function getPackageProviders($app): array
-    {
+    protected function getPackageProviders(
+        $app
+    ): array {
         return [
             \Yajra\DataTables\DataTablesServiceProvider::class,
             \Yajra\DataTables\HtmlServiceProvider::class,
@@ -129,8 +109,9 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    protected function getPackageAliases($app): array
-    {
+    protected function getPackageAliases(
+        $app
+    ): array {
         return [
             'DataTables' => \Yajra\DataTables\Facades\DataTables::class,
         ];
