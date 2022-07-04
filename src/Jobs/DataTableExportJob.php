@@ -147,8 +147,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
+                    case $this->wantsNumeric($column):
+                        $cellValue = doubleval($value);
+                        $format = $column->exportFormat;
+                        break;
                     default:
-                        $cellValue = $this->isNumeric($value) ? (float) $value : $value;
+                        $cellValue = $this->isNumeric($value) ? doubleval($value) : $value;
                         $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 
@@ -169,6 +173,28 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $columns = $dataTable->html()->getColumns();
 
         return $columns->filter(fn (Column $column) => $column->exportable);
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsText(Column $column): bool
+    {
+        if (! isset($column['exportFormat'])) {
+            return false;
+        }
+
+        return in_array($column['exportFormat'], (array) config('datatables-export.text_formats', ['@']));
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsNumeric(Column $column): bool
+    {
+        return Str::contains($column->exportFormat, ['0', '#']);
     }
 
     /**
@@ -199,18 +225,5 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         return is_numeric($value);
-    }
-
-    /**
-     * @param  \Yajra\DataTables\Html\Column  $column
-     * @return bool
-     */
-    protected function wantsText(Column $column): bool
-    {
-        if (! isset($column['exportFormat'])) {
-            return false;
-        }
-
-        return in_array($column['exportFormat'], (array) config('datatables-export.text_formats', ['@']));
     }
 }
