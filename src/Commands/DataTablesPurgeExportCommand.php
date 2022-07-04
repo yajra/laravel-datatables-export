@@ -4,7 +4,6 @@ namespace Yajra\DataTables\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -31,8 +30,13 @@ class DataTablesPurgeExportCommand extends Command
      */
     public function handle()
     {
+        /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
-        $timestamp = now()->subDay(config('datatables-export.purge.days'))->getTimestamp();
+
+        /** @var int $daysOld */
+        $daysOld = config('datatables-export.purge.days', 1);
+
+        $timestamp = now()->subDays($daysOld)->getTimestamp();
 
         collect(Storage::disk($disk)->files())
             ->each(function ($file) use ($timestamp, $disk) {

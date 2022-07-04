@@ -92,7 +92,7 @@ return [
     'text_formats' => [
         '@',
         NumberFormat::FORMAT_GENERAL,
-        NumberFormat::FORMAT_TEXT
+        NumberFormat::FORMAT_TEXT,
     ],
 
     /*

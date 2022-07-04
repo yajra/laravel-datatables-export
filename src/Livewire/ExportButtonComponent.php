@@ -2,24 +2,36 @@
 
 namespace Yajra\DataTables\Livewire;
 
+use Illuminate\Bus\Batch;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * @property Batch $exportBatch
+ */
 class ExportButtonComponent extends Component
 {
-    public $class = 'btn btn-primary';
-    public $tableId;
-    public $type = 'xlsx';
-    public $filename = null;
+    public string $class = 'btn btn-primary';
 
-    public $exporting = false;
-    public $exportFinished = false;
-    public $exportFailed = false;
-    public $batchJobId = null;
+    public ?string $tableId;
 
-    public function export($batchJobId)
+    public string $type = 'xlsx';
+
+    public string $filename = '';
+
+    public bool $exporting = false;
+
+    public bool $exportFinished = false;
+
+    public bool $exportFailed = false;
+
+    public ?string $batchJobId = null;
+
+    public function export(string $batchJobId): void
     {
         $this->batchJobId = $batchJobId;
         $this->exportFinished = false;
@@ -27,16 +39,16 @@ class ExportButtonComponent extends Component
         $this->exporting = true;
     }
 
-    public function getExportBatchProperty()
+    public function getExportBatchProperty(): ?Batch
     {
-        if (!$this->batchJobId) {
+        if (! $this->batchJobId) {
             return null;
         }
 
         return Bus::findBatch($this->batchJobId);
     }
 
-    public function updateExportProgress()
+    public function updateExportProgress(): void
     {
         $this->exportFinished = $this->exportBatch->finished();
         $this->exportFailed = $this->exportBatch->hasFailures();
@@ -46,18 +58,10 @@ class ExportButtonComponent extends Component
         }
     }
 
-    public function downloadExport()
+    public function downloadExport(): StreamedResponse
     {
-        $disk = config('datatables-export.disk', 'local');
-
-        return Storage::disk($disk)->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
-    }
-
-    public function render()
-    {
-        return view('datatables-export::export-button', [
-            'fileType' => $this->getType()
-        ]);
+        return Storage::disk($this->getDisk())
+                      ->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 
     protected function getType(): string
@@ -69,12 +73,27 @@ class ExportButtonComponent extends Component
         return $this->type == 'csv' ? 'csv' : 'xlsx';
     }
 
-    protected function getFilename()
+    protected function getFilename(): string
     {
-        if (Str::endsWith($this->filename, ['csv', 'xlsx'])) {
+        if (Str::endsWith(Str::lower($this->filename), ['csv', 'xlsx'])) {
             return $this->filename;
         }
 
-        return null;
+        return Str::random().'.'.$this->getType();
+    }
+
+    public function render(): Renderable
+    {
+        return view('datatables-export::export-button', [
+            'fileType' => $this->getType(),
+        ]);
+    }
+
+    protected function getDisk(): string
+    {
+        /** @var string $disk */
+        $disk = config('datatables-export.disk', 'local');
+
+        return $disk;
     }
 }
