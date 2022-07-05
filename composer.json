@@ -17,10 +17,10 @@
     }
   ],
   "require": {
-    "php": ">=7.4|8.*",
+    "php": "8.*",
     "yajra/laravel-datatables-buttons": "4.*|9.*",
     "livewire/livewire": "2.*|3.*",
-    "openspout/openspout": "^3",
+    "openspout/openspout": "^4",
     "ext-json": "*"
   },
   "require-dev": {
