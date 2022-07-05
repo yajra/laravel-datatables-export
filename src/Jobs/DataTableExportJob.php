@@ -114,7 +114,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $filename = $this->batchId.'.'.$exportType;
 
         $path = Storage::disk($disk)->path($filename);
-        $writer = new ODS_Writer();
         $writer->openToFile($path);
 
         $columns = $this->getExportableColumns($oTable);
@@ -157,32 +156,34 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 /** @var string $defaultDateFormat */
                 $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
 
-                switch (true) {
-                    case $this->wantsText($column):
-                        $cellValue = strval($value);
-                        $format = $column->exportFormat ?? '@';
-                        break;
-                    case $this->wantsDateFormat($column):
-                        $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
-                        $format = $column->exportFormat ?? $defaultDateFormat;
-                        break;
-                    case $this->wantsNumeric($column):
-                        $cellValue = floatval($value);
-                        $format = $column->exportFormat;
-                        break;
-                    case $this->isDateTimeOrDateInterval($value):
-                        $cellValue = $value;
-                        $format = $column->exportFormat ?? $defaultDateFormat;
-                        break;
-                    default:
-                        $cellValue = $this->isNumeric($value) ? floatval($value) : $value;
-                        $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
-                }
+
 
                 if (is_callable($column->exportFormat)) {
                     $format = value(app()->call($column->exportFormat));
-                    $cells[] = Cell::fromValue($cellValue, $format);
+                    $cells[] = Cell::fromValue(strval($value), $format);
                 } else {
+                    switch (true) {
+                        case $this->wantsText($column):
+                            $cellValue = strval($value);
+                            $format = $column->exportFormat ?? '@';
+                            break;
+                        case $this->wantsDateFormat($column):
+                            $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
+                            $format = $column->exportFormat ?? $defaultDateFormat;
+                            break;
+                        case $this->wantsNumeric($column):
+                            $cellValue = floatval($value);
+                            $format = $column->exportFormat;
+                            break;
+                        case $this->isDateTimeOrDateInterval($value):
+                            $cellValue = $value;
+                            $format = $column->exportFormat ?? $defaultDateFormat;
+                            break;
+                        default:
+                            $cellValue = $this->isNumeric($value) ? floatval($value) : $value;
+                            $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
+                    }
+
                     $cells[] = Cell::fromValue($cellValue,
                         (new Style)->setFormat($format));
                 }
@@ -195,12 +196,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
     /**
      * @param  DataTable  $dataTable
-     * @return Collection
+     * @return Collection<array-key, Column>
      */
     protected function getExportableColumns(DataTable $dataTable): Collection
     {
         $columns = $dataTable->html()->getColumns();
-        dd($columns->filter(fn(Column $column) => $column->exportable));
 
         return $columns->filter(fn(Column $column) => $column->exportable);
     }
@@ -240,7 +240,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      */
     protected function wantsNumeric(Column $column): bool
     {
-        return Str::contains($column->exportFormat, ['0', '#']);
+            return Str::contains($column->exportFormat, ['0', '#']);
     }
 
     /**
