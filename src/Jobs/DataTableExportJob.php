@@ -24,10 +24,7 @@ use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Common\Exception\UnsupportedTypeException;
-use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use OpenSpout\Writer\CSV\Writer as CSV_Writer;
-use OpenSpout\Writer\Exception\WriterAlreadyOpenedException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\ODS\Writer as ODS_Writer;
 use OpenSpout\Writer\XLSX\Writer as XLSX_Writer;
@@ -54,7 +51,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     /**
      * @var int|string
      */
-    public $user;
+    public string|int $user;
 
     /**
      * Create a new job instance.
@@ -63,7 +60,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @param  array  $request
      * @param  int|string  $user
      */
-    public function __construct(array $dataTable, array $request, $user)
+    public function __construct(array $dataTable, array $request, int|string $user)
     {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
@@ -79,9 +76,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @throws IOException
      * @throws UnsupportedTypeException
      * @throws WriterNotOpenedException
-     * @throws WriterAlreadyOpenedException
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->user) {
             Auth::loginUsingId($this->user);
@@ -103,7 +99,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
 
-
         $writer = match ($exportType) {
             'csv' => new CSV_Writer(),
             'xlsx' => new XLSX_Writer(),
@@ -117,11 +112,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $writer->openToFile($path);
 
         $columns = $this->getExportableColumns($oTable);
-        $writer->addRow(
-            Row::fromValues(
-                $columns->map(fn(Column $column) => strip_tags($column->title))->toArray()
-            )
-        );
+
+        /** @var list<null|bool|DateInterval|DateTimeInterface|float|int|string> $header */
+        $header = $columns->map(fn(Column $column) => strip_tags($column->title))->toArray();
+        $writer->addRow(Row::fromValues($header));
 
         if (config('datatables-export.method', 'lazy') === 'lazy') {
             /** @var int $chunkSize */
@@ -157,8 +151,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
 
 
-
                 if (is_callable($column->exportFormat)) {
+                    /** @var Style $format */
                     $format = value(app()->call($column->exportFormat));
                     $cells[] = Cell::fromValue(strval($value), $format);
                 } else {
@@ -184,12 +178,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                             $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                     }
 
-                    $cells[] = Cell::fromValue($cellValue,
-                        (new Style)->setFormat($format));
+                    $cells[] = Cell::fromValue($cellValue, (new Style)->setFormat($format));
                 }
             });
 
-            $writer->addRow(new Row($cells));
+            $writer->addRow(new Row($cells, (new Style())));
         }
         $writer->close();
     }
@@ -240,7 +233,21 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      */
     protected function wantsNumeric(Column $column): bool
     {
-            return Str::contains($column->exportFormat, ['0', '#']);
+        return Str::contains($column->exportFormat, ['0', '#']);
+    }
+
+    /**
+     * Returns whether the given value is a DateTime or DateInterval object.
+     *
+     * @param  mixed  $value
+     *
+     * @return bool Whether the given value is a DateTime or DateInterval object
+     */
+    public function isDateTimeOrDateInterval($value): bool
+    {
+        return
+            $value instanceof DateTimeInterface
+            || $value instanceof DateInterval;
     }
 
     /**
@@ -255,20 +262,5 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         return is_numeric($value);
-    }
-
-    /**
-     * Returns whether the given value is a DateTime or DateInterval object.
-     *
-     * @param mixed $value
-     *
-     * @return bool Whether the given value is a DateTime or DateInterval object
-     */
-    public function isDateTimeOrDateInterval($value)
-    {
-        return
-            $value instanceof \DateTimeInterface
-            || $value instanceof \DateInterval
-            ;
     }
 }
