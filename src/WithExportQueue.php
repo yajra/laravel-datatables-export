@@ -2,6 +2,7 @@
 
 namespace Yajra\DataTables;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Yajra\DataTables\Jobs\DataTableExportJob;
 
@@ -38,13 +39,13 @@ trait WithExportQueue
      */
     public function exportQueue(): string
     {
-        $batch = Bus::batch([
-            new DataTableExportJob(
-                [self::class, $this->attributes],
-                $this->request->all(),
-                optional($this->request->user())->id
-            ),
-        ])->name('datatables-export')->dispatch();
+        $job = new DataTableExportJob(
+            [self::class, $this->attributes],
+            request()->all(),
+            Auth::id() ?? 0
+        );
+
+        $batch = Bus::batch([$job])->name('datatables-export')->dispatch();
 
         return $batch->id;
     }
