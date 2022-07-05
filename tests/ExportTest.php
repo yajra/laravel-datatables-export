@@ -14,8 +14,8 @@ class ExportTest extends TestCase
     public function it_can_export_to_excel(): void
     {
         $this->get('/users')->assertOk();
-        $batchId = $this->getAjax('/users?action=exportQueue')->getContent();
-
+        $batchId = $this->getAjax('/users?action=exportQueue&exportType=xlsx')->getContent();
+        
         $this->assertTrue(DB::table('job_batches')->where('id', $batchId)->exists());
     }
 
