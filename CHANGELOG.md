@@ -2,10 +2,6 @@
 
 ## UNRELEASED
 
-## v0.11.1 - 07-05-2022
-
-- Fix compatibility with PHP7.4 and DataTables v9 #24
-
 ## v0.11.0 - 07-04-2022
 
 - Add github actions ci/cd #21
