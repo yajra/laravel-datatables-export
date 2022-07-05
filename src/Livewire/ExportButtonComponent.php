@@ -23,6 +23,8 @@ class ExportButtonComponent extends Component
 
     public string $filename = '';
 
+    public string $sheetName = 'Sheet1';
+
     public bool $exporting = false;
 
     public bool $exportFinished = false;

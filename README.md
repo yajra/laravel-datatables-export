@@ -91,6 +91,14 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 <livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
 ```
 
+## Set Excel Sheet Name
+
+You can set the Excel sheet name by setting the property. 
+
+```php
+<livewire:export-button :table-id="$dataTable->getTableId()" sheetName="Monthly Report" />
+```
+
 ## Formatting Columns
 
 You can format the column by setting it via Column definition on you DataTable service class.
