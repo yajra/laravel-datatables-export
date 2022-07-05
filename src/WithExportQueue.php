@@ -20,7 +20,7 @@ trait WithExportQueue
      *
      * @throws \Throwable
      */
-    public function render(string $view, array $data = [], array $mergeData = [])
+    public function render($view, $data = [], $mergeData = [])
     {
         if (request()->ajax() && request('action') == 'exportQueue') {
             return $this->exportQueue();
