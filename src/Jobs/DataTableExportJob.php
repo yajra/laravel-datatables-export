@@ -94,16 +94,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable->skipPaging();
 
         /** @var string $exportType */
-        $exportType = request('exportType');
+        $exportType = in_array(request('exportType'),['csv','ods']) ? request('exportType') : 'xlsx';
 
         /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
 
         $writer = match ($exportType) {
             'csv' => new CSV_Writer(),
-            'xlsx' => new XLSX_Writer(),
             'ods' => new ODS_Writer(),
-            default => throw new UnsupportedTypeException('No readers supporting the given type: '.$exportType),
+            default => new XLSX_Writer(),
         };
 
         $filename = $this->batchId.'.'.$exportType;
