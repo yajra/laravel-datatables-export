@@ -40,6 +40,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
     public array $request;
 
+    public string $sheetName;
+
     /**
      * @var int|string
      */
@@ -50,13 +52,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      *
      * @param  array  $dataTable
      * @param  array  $request
+     * @param  string  $sheetName
      * @param  int|string  $user
      */
-    public function __construct(array $dataTable, array $request, $user)
+    public function __construct(array $dataTable, array $request, string $sheetName, $user)
     {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
         $this->request = $request;
+        $this->sheetName = $sheetName;
         $this->user = $user;
     }
 
@@ -98,6 +102,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         $writer = WriterEntityFactory::createWriter($type);
         $writer->openToFile($path);
+
+        $sheet = $writer->getCurrentSheet();
+        $sheet->setName($this->sheetName);
 
         $columns = $this->getExportableColumns($oTable);
         $writer->addRow(
