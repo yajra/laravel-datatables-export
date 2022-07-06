@@ -51,6 +51,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
     public array $request;
 
+    public string $sheetName;
+
     /**
      * @var int|string
      */
@@ -62,13 +64,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @param  array  $dataTable
      * @param  array  $request
      * @param  int|string  $user
+     * @param  string  $sheetName
      */
-    public function __construct(array $dataTable, array $request, $user)
+    public function __construct(array $dataTable, array $request, $user, string $sheetName = 'Sheet1')
     {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
         $this->request = $request;
         $this->user = $user;
+        $this->sheetName = $sheetName;
     }
 
     /**
@@ -116,6 +120,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $path = Storage::disk($disk)->path($filename);
         $writer = new ODS_Writer();
         $writer->openToFile($path);
+
+        if ($writer instanceof XLSXWriter) {
+            $sheet = $writer->getCurrentSheet();
+            $sheet->setName(substr($this->sheetName,0,31));
+        }
 
         $columns = $this->getExportableColumns($oTable);
         $writer->addRow(
@@ -190,6 +199,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
             $writer->addRow(new Row($cells));
         }
+
         $writer->close();
     }
 

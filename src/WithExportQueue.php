@@ -42,11 +42,23 @@ trait WithExportQueue
         $job = new DataTableExportJob(
             [self::class, $this->attributes],
             request()->all(),
-            Auth::id() ?? 0
+            Auth::id() ?? 0,
+            $this->sheetName(),
         );
 
         $batch = Bus::batch([$job])->name('datatables-export')->dispatch();
 
         return $batch->id;
+    }
+
+    /**
+     * Default sheet name.
+     * Character limit 31.
+     *
+     * @return string
+     */
+    protected function sheetName() : string
+    {
+        return request('sheetName', 'Sheet1');
     }
 }
