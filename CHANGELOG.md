@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.12.0 - 07-06-2022
+
+- Add feature to set sheet name #25
+
 ## v0.11.1 - 07-05-2022
 
 - Fix compatibility with PHP7.4 and DataTables v9 #24
