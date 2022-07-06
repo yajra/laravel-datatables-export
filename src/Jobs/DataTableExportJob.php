@@ -21,6 +21,7 @@ use OpenSpout\Common\Helper\CellTypeHelper;
 use OpenSpout\Common\Type;
 use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
+use OpenSpout\Writer\XLSX\Writer as XLSXWriter;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
@@ -100,13 +101,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         $path = Storage::disk($disk)->path($filename);
 
+        /** @var XLSXWriter $writer */
         $writer = WriterEntityFactory::createWriter($type);
-        $writer->openToFile($path);
-
         if ($type == Type::XLSX) {
             $sheet = $writer->getCurrentSheet();
             $sheet->setName($this->sheetName);
         }
+
+        $writer->openToFile($path);
 
         $columns = $this->getExportableColumns($oTable);
         $writer->addRow(
@@ -175,6 +177,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
             $writer->addRow(WriterEntityFactory::createRow($cells));
         }
+
         $writer->close();
     }
 
