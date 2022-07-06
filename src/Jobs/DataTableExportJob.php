@@ -25,6 +25,7 @@ use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Common\Exception\UnsupportedTypeException;
 use OpenSpout\Writer\CSV\Writer as CSV_Writer;
+use OpenSpout\Writer\Exception\InvalidSheetNameException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\ODS\Writer as ODS_Writer;
 use OpenSpout\Writer\XLSX\Writer as XLSX_Writer;
@@ -78,7 +79,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @return void
      *
      * @throws IOException
-     * @throws UnsupportedTypeException
+     * @throws InvalidSheetNameException
      * @throws WriterNotOpenedException
      */
     public function handle(): void
@@ -98,7 +99,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable->skipPaging();
 
         /** @var string $exportType */
-        $exportType = in_array(request('exportType'),['csv','ods']) ? request('exportType') : 'xlsx';
+        $exportType = in_array(request('exportType'), ['csv', 'ods']) ? request('exportType') : 'xlsx';
 
         /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
@@ -114,9 +115,9 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $path = Storage::disk($disk)->path($filename);
         $writer->openToFile($path);
 
-        if ($writer instanceof XLSXWriter) {
+        if ($writer instanceof XLSX_Writer) {
             $sheet = $writer->getCurrentSheet();
-            $sheet->setName(substr($this->sheetName,0,31));
+            $sheet->setName(substr($this->sheetName, 0, 31));
         }
 
         $columns = $this->getExportableColumns($oTable);
