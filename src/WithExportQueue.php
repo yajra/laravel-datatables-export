@@ -59,6 +59,6 @@ trait WithExportQueue
      */
     protected function sheetName() : string
     {
-        return substr(request('sheetName', 'Sheet1'), 0, 31);
+        return request('sheetName', 'Sheet1');
     }
 }
