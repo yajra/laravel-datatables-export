@@ -101,11 +101,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         $path = Storage::disk($disk)->path($filename);
 
-        /** @var XLSXWriter $writer */
         $writer = WriterEntityFactory::createWriter($type);
         $writer->openToFile($path);
 
-        if ($type == Type::XLSX) {
+        if ($writer instanceof XLSXWriter) {
             $sheet = $writer->getCurrentSheet();
             $sheet->setName($this->sheetName);
         }
