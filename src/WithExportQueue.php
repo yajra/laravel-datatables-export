@@ -55,10 +55,10 @@ trait WithExportQueue
      * Default sheet name.
      * Character limit 31.
      *
-     * @return mixed
+     * @return string
      */
-    protected function sheetName()
+    protected function sheetName() : string
     {
-        return request('sheetName', 'Sheet1');
+        return substr(request('sheetName', 'Sheet1'), 0, 31);
     }
 }
