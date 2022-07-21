@@ -141,8 +141,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 $row = Arr::flatten($row);
             }
 
-            /** @var string $defaultDateFormat */
-            $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
+            $defaultDateFormat = strval(config('datatables-export.default_date_format', 'yyyy-mm-dd'));
 
             $columns->map(function (Column $column) use ($row, &$cells, $defaultDateFormat) {
                 $property = $column->data;
