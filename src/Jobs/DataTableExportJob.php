@@ -137,7 +137,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                 $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
             }
 
-            if ($this->usesLazyMethod()) {
+            if ($this->usesLazyMethod() && is_array($row)) {
                 $row = Arr::flatten($row);
             }
 
