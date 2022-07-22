@@ -50,9 +50,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      */
     public $user;
 
-    public int $memory = 1024;
-    public int $timeout = 3600;
-
     /**
      * Create a new job instance.
      *
