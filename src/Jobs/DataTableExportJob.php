@@ -147,7 +147,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $property = $property['_'] ?? $column->name;
                 }
 
-                /** @var array|bool|int|string|null $value */
                 $value = $row[$property] ?? '';
 
                 if (is_array($value)) {
