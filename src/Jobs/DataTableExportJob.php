@@ -97,16 +97,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        /** @var string $exportType */
-        $exportType = request('exportType');
-
-        /** @var string $disk */
-        $disk = config('datatables-export.disk', 'local');
+        $exportType = strval(request('exportType'));
 
         $type = Str::startsWith($exportType, Type::CSV) ? Type::CSV : Type::XLSX;
         $filename = $this->batchId.'.'.$type;
 
-        $path = Storage::disk($disk)->path($filename);
+        $path = Storage::disk($this->getDisk())->path($filename);
 
         $writer = WriterEntityFactory::createWriter($type);
         $writer->openToFile($path);
@@ -187,6 +183,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         $writer->close();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDisk(): string
+    {
+        return strval(config('datatables-export.disk', 'local'));
     }
 
     /**
