@@ -4,6 +4,7 @@ namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Yajra\DataTables\Exports\Tests\DataTables\UsersDataTable;
 
 class ExportTest extends TestCase
@@ -16,6 +17,7 @@ class ExportTest extends TestCase
         $this->get('/users')->assertOk();
         $batchId = $this->getAjax('/users?action=exportQueue')->getContent();
 
+        $this->assertTrue(Schema::hasTable('job_batches'));
         $this->assertTrue(DB::table('job_batches')->where('id', $batchId)->exists());
     }
 
