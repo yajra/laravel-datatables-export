@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.13.0 - 08-04-2022
+
+- Performance improvement #27
+
 ## v0.12.0 - 07-06-2022
 
 - Add feature to set sheet name #25
