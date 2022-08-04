@@ -3,6 +3,7 @@
 namespace Yajra\DataTables\Jobs;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,6 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Helper\CellTypeHelper;
@@ -73,10 +75,12 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @throws \OpenSpout\Common\Exception\IOException
      * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
      * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
+     * @throws \OpenSpout\Writer\Exception\InvalidSheetNameException
      */
     public function handle()
     {
         if ($this->user) {
+            Event::forget(Login::class);
             Auth::loginUsingId($this->user);
         }
 
@@ -90,23 +94,19 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        /** @var string $exportType */
-        $exportType = request('exportType');
-
-        /** @var string $disk */
-        $disk = config('datatables-export.disk', 'local');
+        $exportType = strval(request('exportType'));
 
         $type = Str::startsWith($exportType, Type::CSV) ? Type::CSV : Type::XLSX;
         $filename = $this->batchId.'.'.$type;
 
-        $path = Storage::disk($disk)->path($filename);
+        $path = Storage::disk($this->getDisk())->path($filename);
 
         $writer = WriterEntityFactory::createWriter($type);
         $writer->openToFile($path);
 
         if ($writer instanceof XLSXWriter) {
             $sheet = $writer->getCurrentSheet();
-            $sheet->setName(substr($this->sheetName,0,31));
+            $sheet->setName(substr($this->sheetName, 0, 31));
         }
 
         $columns = $this->getExportableColumns($oTable);
@@ -116,10 +116,8 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
             )
         );
 
-        if (config('datatables-export.method', 'lazy') === 'lazy') {
-            /** @var int $chunkSize */
-            $chunkSize = config('datatables-export.chunk', 1000);
-
+        if ($this->usesLazyMethod()) {
+            $chunkSize = intval(config('datatables-export.chunk', 1000));
             $query = $dataTable->getFilteredQuery()->lazy($chunkSize);
         } else {
             $query = $dataTable->getFilteredQuery()->cursor();
@@ -127,7 +125,18 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         foreach ($query as $row) {
             $cells = [];
-            $columns->map(function (Column $column) use ($row, &$cells) {
+
+            if (! $row instanceof Model) {
+                $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
+            }
+
+            if ($this->usesLazyMethod() && is_array($row)) {
+                $row = Arr::flatten($row);
+            }
+
+            $defaultDateFormat = strval(config('datatables-export.default_date_format', 'yyyy-mm-dd'));
+
+            $columns->map(function (Column $column) use ($row, &$cells, $defaultDateFormat) {
                 $property = $column->data;
 
                 /* Handles orthogonal data */
@@ -135,19 +144,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $property = $property['_'] ?? $column->name;
                 }
 
-                if (! $row instanceof Model) {
-                    $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
-                }
-
-                /** @var array|bool|int|string|null $value */
-                $value = Arr::get($row, $property, '');
+                $value = $row[$property] ?? '';
 
                 if (is_array($value)) {
                     $value = json_encode($value);
                 }
-
-                /** @var string $defaultDateFormat */
-                $defaultDateFormat = config('datatables-export.default_date_format', 'yyyy-mm-dd');
 
                 switch (true) {
                     case $this->wantsText($column):
@@ -181,6 +182,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
+     * @return string
+     */
+    protected function getDisk(): string
+    {
+        return strval(config('datatables-export.disk', 'local'));
+    }
+
+    /**
      * @param  \Yajra\DataTables\Services\DataTable  $dataTable
      * @return \Illuminate\Support\Collection<array-key, Column>
      */
@@ -189,6 +198,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $columns = $dataTable->html()->getColumns();
 
         return $columns->filter(fn (Column $column) => $column->exportable);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function usesLazyMethod(): bool
+    {
+        return config('datatables-export.method', 'lazy') === 'lazy';
     }
 
     /**
@@ -208,15 +225,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
      * @param  \Yajra\DataTables\Html\Column  $column
      * @return bool
      */
-    protected function wantsNumeric(Column $column): bool
-    {
-        return Str::contains($column->exportFormat, ['0', '#']);
-    }
-
-    /**
-     * @param  \Yajra\DataTables\Html\Column  $column
-     * @return bool
-     */
     protected function wantsDateFormat(Column $column): bool
     {
         if (! isset($column['exportFormat'])) {
@@ -227,6 +235,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $formats = config('datatables-export.date_formats', []);
 
         return in_array($column['exportFormat'], $formats);
+    }
+
+    /**
+     * @param  \Yajra\DataTables\Html\Column  $column
+     * @return bool
+     */
+    protected function wantsNumeric(Column $column): bool
+    {
+        return Str::contains($column->exportFormat, ['0', '#']);
     }
 
     /**
