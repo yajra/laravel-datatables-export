@@ -245,7 +245,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param  int|bool|string|null  $value
+     * @param  mixed  $value
      * @return bool
      */
     protected function isNumeric($value): bool
