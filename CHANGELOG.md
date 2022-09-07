@@ -4,7 +4,7 @@
 
 ## v0.13.1 - 08-04-2022
 
-- Fix export on columns from eloquent relation #130
+- Fix export on columns from eloquent relation #29
 
 ## v0.13.0 - 08-04-2022
 
