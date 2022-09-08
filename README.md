@@ -180,6 +180,14 @@ Column::make('id')->exportFormat(NumberFormat::FORMAT_GENERAL),
 Column::make('id')->exportFormat(NumberFormat::FORMAT_TEXT),
 ```
 
+## Auto Download
+
+Option to automatically download the exported file.
+
+```php
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" auto-download="true"/>
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/yajra/laravel-datatables-export/blob/master/.github/CONTRIBUTING.md) for details.
