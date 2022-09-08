@@ -64,9 +64,11 @@ class ExportButtonComponent extends Component
             $this->exporting = false;
             if ($this->autoDownload and ! $this->downloaded){
                 $this->downloaded = true;
+
                 return $this->downloadExport();
             }
         }
+
         return null;
     }
 
