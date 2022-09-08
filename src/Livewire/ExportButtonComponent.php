@@ -25,6 +25,10 @@ class ExportButtonComponent extends Component
 
     public string $sheetName = 'Sheet1';
 
+    public bool $autoDownload = false;
+
+    public bool $downloaded = false;
+
     public bool $exporting = false;
 
     public bool $exportFinished = false;
@@ -39,6 +43,7 @@ class ExportButtonComponent extends Component
         $this->exportFinished = false;
         $this->exportFailed = false;
         $this->exporting = true;
+        $this->downloaded = false;
     }
 
     public function getExportBatchProperty(): ?Batch
@@ -50,14 +55,19 @@ class ExportButtonComponent extends Component
         return Bus::findBatch($this->batchJobId);
     }
 
-    public function updateExportProgress(): void
+    public function updateExportProgress(): ?StreamedResponse
     {
         $this->exportFinished = $this->exportBatch->finished();
         $this->exportFailed = $this->exportBatch->hasFailures();
 
         if ($this->exportFinished) {
             $this->exporting = false;
+            if ($this->autoDownload and ! $this->downloaded){
+                $this->downloaded = true;
+                return $this->downloadExport();
+            }
         }
+        return null;
     }
 
     public function downloadExport(): StreamedResponse
