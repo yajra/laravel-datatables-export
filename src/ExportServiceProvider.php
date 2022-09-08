@@ -3,7 +3,6 @@
 namespace Yajra\DataTables;
 
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 use Livewire\LivewireServiceProvider;
 use Yajra\DataTables\Commands\DataTablesPurgeExportCommand;
 use Yajra\DataTables\Livewire\ExportButtonComponent;
@@ -16,7 +15,9 @@ class ExportServiceProvider extends ServiceProvider
 
         $this->publishAssets();
 
-        Livewire::component('export-button', ExportButtonComponent::class);
+        if (! $this->app->runningInConsole()) {
+            app('livewire')->component('export-button', ExportButtonComponent::class);
+        }
     }
 
     protected function publishAssets(): void
