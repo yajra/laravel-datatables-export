@@ -126,12 +126,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         foreach ($query as $row) {
             $cells = [];
 
-            if (! $row instanceof Model) {
-                $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
-            }
+            $row = $row instanceof Arrayable ? $row->toArray() : (array) $row;
 
             if ($this->usesLazyMethod() && is_array($row)) {
-                $row = Arr::flatten($row);
+                $row = Arr::dot($row);
             }
 
             $defaultDateFormat = strval(config('datatables-export.default_date_format', 'yyyy-mm-dd'));
