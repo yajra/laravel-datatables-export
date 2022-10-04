@@ -45,7 +45,7 @@ php artisan migrate
 
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" />
 ```
 
@@ -76,7 +76,7 @@ $schedule->command('datatables:purge-export')->weekly();
 
 You can set the export filename by setting the property.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv" />
 
@@ -87,7 +87,7 @@ You can set the export filename by setting the property.
 
 You can set the export type by setting the property to `csv` or `xlsx`. Default value is `xlsx`.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
 ```
@@ -96,7 +96,7 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 
 Option 1: You can set the Excel sheet name by setting the property. 
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" sheet-name="Monthly Report" />
 ```
 
@@ -184,7 +184,7 @@ Column::make('id')->exportFormat(NumberFormat::FORMAT_TEXT),
 
 Option to automatically download the exported file.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" auto-download="true"/>
 ```
 
