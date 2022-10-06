@@ -10,6 +10,8 @@ parameters:
 
     ignoreErrors:
         - '#Parameter \#1 \$callback of method Illuminate\\Container\\Container::call\(\) expects \(callable\(\): mixed\)\|string*#'
+        - '#Parameter \#2 \$needles of static method Illuminate\\Support\\Str::endsWith*#'
+        - '#Parameter \#2 \$needles of static method Illuminate\\Support\\Str::contains*#'
 
     excludePaths:
         - tests
