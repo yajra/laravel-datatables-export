@@ -2,6 +2,13 @@
 
 ## UNRELEASED
 
+## v1.0.0 - 10-06-2022
+
+- Bump to 1.0.0, possible breaking changes.
+- fix(phpstan): Remove ignored errors #37
+- fix(ci): Fix compatibility with service class #37
+- Use html markdown instead of php markdown for codes that will be placed in blade files (#35)
+
 ## v0.14.0 - 09-08-2022
 
 - Fix export on columns from eloquent relation #29
