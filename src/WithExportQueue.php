@@ -14,14 +14,14 @@ trait WithExportQueue
     /**
      * Process dataTables needed render output.
      *
-     * @param  string  $view
+     * @param  string|null  $view
      * @param  array  $data
      * @param  array  $mergeData
      * @return mixed
      *
      * @throws \Throwable
      */
-    public function render($view, $data = [], $mergeData = [])
+    public function render(string $view = null, array $data = [], array $mergeData = [])
     {
         if (request()->ajax() && request('action') == 'exportQueue') {
             return $this->exportQueue();
