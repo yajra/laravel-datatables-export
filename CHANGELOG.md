@@ -2,6 +2,26 @@
 
 ## UNRELEASED
 
+## v1.0.0 - 10-06-2022
+
+- Bump to 1.0.0, possible breaking changes.
+- fix(phpstan): Remove ignored errors #37
+- fix(ci): Fix compatibility with service class #37
+- Use html markdown instead of php markdown for codes that will be placed in blade files (#35)
+
+## v0.14.0 - 09-08-2022
+
+- Fix export on columns from eloquent relation #29
+- Add auto download feature #30
+
+## v0.13.0 - 08-04-2022
+
+- Performance improvement #27
+
+## v0.12.0 - 07-06-2022
+
+- Add feature to set sheet name #25
+
 ## v0.11.1 - 07-05-2022
 
 - Fix compatibility with PHP7.4 and DataTables v9 #24

@@ -2,7 +2,8 @@
 
 [![Laravel 8|9](https://img.shields.io/badge/Laravel-8|9-orange.svg)](http://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
-[![Build Status](https://travis-ci.org/yajra/laravel-datatables-export.svg?branch=master)](https://travis-ci.org/yajra/laravel-datatables-export)
+[![Continuous Integration](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml)
+[![Static Analysis](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
@@ -44,7 +45,7 @@ php artisan migrate
 
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" />
 ```
 
@@ -75,7 +76,7 @@ $schedule->command('datatables:purge-export')->weekly();
 
 You can set the export filename by setting the property.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv" />
 
@@ -86,7 +87,7 @@ You can set the export filename by setting the property.
 
 You can set the export type by setting the property to `csv` or `xlsx`. Default value is `xlsx`.
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
 <livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
 ```
@@ -95,7 +96,7 @@ You can set the export type by setting the property to `csv` or `xlsx`. Default 
 
 Option 1: You can set the Excel sheet name by setting the property. 
 
-```php
+```html
 <livewire:export-button :table-id="$dataTable->getTableId()" sheet-name="Monthly Report" />
 ```
 
@@ -177,6 +178,14 @@ Option to force auto-detected numeric value as text format.
 Column::make('id')->exportFormat('@'),
 Column::make('id')->exportFormat(NumberFormat::FORMAT_GENERAL),
 Column::make('id')->exportFormat(NumberFormat::FORMAT_TEXT),
+```
+
+## Auto Download
+
+Option to automatically download the exported file.
+
+```html
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" auto-download="true"/>
 ```
 
 ## Contributing

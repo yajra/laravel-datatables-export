@@ -23,8 +23,12 @@
         <div class="d-inline" wire:poll="updateExportProgress">Exporting...please wait.</div>
     @endif
 
-    @if($exportFinished && !$exportFailed)
+    @if($exportFinished && !$exportFailed && !$autoDownload)
         <span>Done. Download file <a href="#" class="text-primary" wire:click.prevent="downloadExport">here</a></span>
+    @endif
+
+    @if($exportFinished && !$exportFailed && $autoDownload && $downloaded)
+        <span>Done. File has been downloaded.</span>
     @endif
 
     @if($exportFailed)
