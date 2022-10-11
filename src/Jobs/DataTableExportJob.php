@@ -106,6 +106,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         if ($writer instanceof XLSXWriter) {
             $sheet = $writer->getCurrentSheet();
+
             $sheet->setName(substr($this->sheetName, 0, 31));
         }
 
