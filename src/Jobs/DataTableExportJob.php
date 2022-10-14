@@ -37,13 +37,13 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     use SerializesModels;
     use Batchable;
 
-    public string $dataTable;
+    public string $dataTable = '';
 
-    public array $attributes;
+    public array $attributes = [];
 
-    public array $request;
+    public array $request = [];
 
-    public string $sheetName;
+    public string $sheetName = '';
 
     /**
      * @var int|string
