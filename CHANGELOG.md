@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v1.0.1 - 01-11-2023
+
+- fix: Fix missing component when using livewire test #44
+- Fixes #43
+
 ## v1.0.0 - 10-06-2022
 
 - Bump to 1.0.0, possible breaking changes.
