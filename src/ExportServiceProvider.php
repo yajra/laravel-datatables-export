@@ -16,9 +16,7 @@ class ExportServiceProvider extends ServiceProvider
 
         $this->publishAssets();
 
-        if (! $this->app->runningInConsole()) {
-            Livewire::component('export-button', ExportButtonComponent::class);
-        }
+        Livewire::component('export-button', ExportButtonComponent::class);
     }
 
     protected function publishAssets(): void
