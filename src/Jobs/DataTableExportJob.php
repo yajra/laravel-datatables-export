@@ -182,7 +182,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $writer->close();
 
         if($this->getS3Disk()) {
-            Storage::disk($this->getS3Disk())->put($filename, (new File($path))->getContent());
+            Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
     }
 
