@@ -74,8 +74,10 @@ class ExportButtonComponent extends Component
 
     public function downloadExport(): StreamedResponse
     {
-        return Storage::disk($this->getDisk())
-                      ->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
+        if($this->getS3Disk()) {
+            return Storage::disk($this->getS3Disk())->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
+        }
+        return Storage::disk($this->getDisk())->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 
     protected function getType(): string
@@ -107,6 +109,14 @@ class ExportButtonComponent extends Component
     {
         /** @var string $disk */
         $disk = config('datatables-export.disk', 'local');
+
+        return $disk;
+    }
+
+    protected function getS3Disk(): string
+    {
+        /** @var string $disk */
+        $disk = config('datatables-export.s3_disk', '');
 
         return $disk;
     }
