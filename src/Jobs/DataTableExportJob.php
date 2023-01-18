@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
@@ -179,6 +180,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         $writer->close();
+
+        if($this->getS3Disk()) {
+            Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
+        }
     }
 
     /**
@@ -187,6 +192,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     protected function getDisk(): string
     {
         return strval(config('datatables-export.disk', 'local'));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getS3Disk(): string
+    {
+        return strval(config('datatables-export.s3_disk', ''));
     }
 
     /**
