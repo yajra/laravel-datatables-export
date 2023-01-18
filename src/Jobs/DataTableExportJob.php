@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
@@ -181,7 +180,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
 
         $writer->close();
 
-        if($this->getS3Disk()) {
+        if ($this->getS3Disk()) {
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
     }

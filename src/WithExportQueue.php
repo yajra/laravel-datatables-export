@@ -57,7 +57,7 @@ trait WithExportQueue
      *
      * @return string
      */
-    protected function sheetName() : string
+    protected function sheetName(): string
     {
         return request('sheetName', 'Sheet1');
     }

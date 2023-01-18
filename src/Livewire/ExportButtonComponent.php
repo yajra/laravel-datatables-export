@@ -62,7 +62,7 @@ class ExportButtonComponent extends Component
 
         if ($this->exportFinished) {
             $this->exporting = false;
-            if ($this->autoDownload and ! $this->downloaded){
+            if ($this->autoDownload and ! $this->downloaded) {
                 $this->downloaded = true;
 
                 return $this->downloadExport();
@@ -74,9 +74,11 @@ class ExportButtonComponent extends Component
 
     public function downloadExport(): StreamedResponse
     {
-        if($this->getS3Disk()) {
-            return Storage::disk($this->getS3Disk())->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
+        if ($this->getS3Disk()) {
+            return Storage::disk($this->getS3Disk())
+                          ->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
         }
+
         return Storage::disk($this->getDisk())->download($this->batchJobId.'.'.$this->getType(), $this->getFilename());
     }
 

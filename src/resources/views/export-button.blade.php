@@ -16,7 +16,8 @@
                 x-ref="exportBtn"
                 :disabled="$wire.exporting"
                 class="{{ $class }}"
-        >Export</button>
+        >Export
+        </button>
     </form>
 
     @if($exporting && !$exportFinished)
