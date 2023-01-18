@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v1.1.0 - 01-18-2023
+
+- feat: add ability to use s3 storage #45
+
 ## v1.0.1 - 01-11-2023
 
 - fix: Fix missing component when using livewire test #44
