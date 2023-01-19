@@ -17,6 +17,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Helper\CellTypeHelper;
@@ -183,6 +184,11 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         if ($this->getS3Disk()) {
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
+
+        if (request('emailTo')) {
+            $data = ['email' => urldecode(strval(request('emailTo'))), 'path' => $path];
+            $this->sendResults($data);
+        }
     }
 
     /**
@@ -270,5 +276,19 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         return is_numeric($value);
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function sendResults(array $data): void
+    {
+        Mail::send('datatables-export::export-email', $data, function ($message) use ($data) {
+            $message->attach($data['path']);
+            $message->to($data['email'])
+                ->subject('Export Report');
+            $message->from(config('datatables-export.mail_from'));
+        });
     }
 }

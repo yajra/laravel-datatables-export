@@ -3,7 +3,7 @@
           x-on:submit.prevent="
                 $refs.exportBtn.disabled = true;
                 var url = window._buildUrl(LaravelDataTables['{{ $tableId }}'], 'exportQueue');
-                $.get(url + '&exportType={{$fileType}}&sheetName={{$sheetName}}').then(function(exportId) {
+                $.get(url + '&exportType={{$fileType}}&sheetName={{$sheetName}}&emailTo={{urlencode($emailTo)}}').then(function(exportId) {
                     $wire.export(exportId)
                 }).catch(function(error) {
                     $wire.exportFinished = true;
@@ -19,6 +19,10 @@
         >Export
         </button>
     </form>
+
+    @if($exporting && $emailTo)
+        <div class="d-inline">Export will be emailed to {{ $emailTo }}.</div>
+    @endif
 
     @if($exporting && !$exportFinished)
         <div class="d-inline" wire:poll="updateExportProgress">Exporting...please wait.</div>
