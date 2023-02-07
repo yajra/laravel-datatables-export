@@ -53,7 +53,7 @@ return [
     | Mail from address
     |--------------------------------------------------------------------------
     |
-    | Will be used to email report from this address
+    | Will be used to email report from this address.
     |
     */
     'mail_from' => env('MAIL_FROM_ADDRESS', ''),
