@@ -3,6 +3,7 @@
 namespace Yajra\DataTables\Jobs;
 
 use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -20,12 +21,12 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use OpenSpout\Common\Helper\CellTypeHelper;
-use OpenSpout\Common\Type;
-use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Writer\Common\Creator\WriterFactory;
+use OpenSpout\Writer\XLSX\Helper\DateHelper;
 use OpenSpout\Writer\XLSX\Writer as XLSXWriter;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
@@ -95,14 +96,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $exportType = strval(request('exportType'));
+        $exportType = strtolower(strval(request('exportType')));
 
-        $type = Str::startsWith($exportType, Type::CSV) ? Type::CSV : Type::XLSX;
+        $type = Str::startsWith($exportType, 'csv') ? 'csv' : 'xlsx';
         $filename = $this->batchId.'.'.$type;
 
         $path = Storage::disk($this->getDisk())->path($filename);
 
-        $writer = WriterEntityFactory::createWriter($type);
+        $writer = WriterFactory::createFromFile($filename);
         $writer->openToFile($path);
 
         if ($writer instanceof XLSXWriter) {
@@ -112,11 +113,13 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         $columns = $this->getExportableColumns($oTable);
-        $writer->addRow(
-            WriterEntityFactory::createRowFromArray(
-                $columns->map(fn (Column $column) => strip_tags($column->title))->toArray()
-            )
-        );
+        $headers = [];
+
+        $columns->each(function (Column $column) use (&$headers) {
+            $headers[] = strip_tags($column->title);
+        });
+
+        $writer->addRow(Row::fromValues($headers));
 
         if ($this->usesLazyMethod()) {
             $chunkSize = intval(config('datatables-export.chunk', 1000));
@@ -144,7 +147,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $property = $property['_'] ?? $column->name;
                 }
 
-                /** @var array|bool|int|string|null $value */
+                /** @var array|bool|int|string|null|DateTimeInterface $value */
                 $value = $row[$property] ?? '';
 
                 if (is_array($value)) {
@@ -157,14 +160,14 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $format = $column->exportFormat ?? '@';
                         break;
                     case $this->wantsDateFormat($column):
-                        $cellValue = $value ? Date::dateTimeToExcel(Carbon::parse(strval($value))) : '';
+                        $cellValue = $value ? DateHelper::toExcel(Carbon::parse(strval($value))) : '';
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     case $this->wantsNumeric($column):
                         $cellValue = floatval($value);
                         $format = $column->exportFormat;
                         break;
-                    case CellTypeHelper::isDateTimeOrDateInterval($value):
+                    case $value instanceof DateTimeInterface:
                         $cellValue = $value;
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
@@ -173,10 +176,10 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 
-                $cells[] = WriterEntityFactory::createCell($cellValue, (new StyleBuilder)->setFormat($format)->build());
+                $cells[] = Cell::fromValue($cellValue, (new Style)->setFormat($format));
             });
 
-            $writer->addRow(WriterEntityFactory::createRow($cells));
+            $writer->addRow(new Row($cells));
         }
 
         $writer->close();
@@ -197,14 +200,6 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     protected function getDisk(): string
     {
         return strval(config('datatables-export.disk', 'local'));
-    }
-
-    /**
-     * @return string
-     */
-    protected function getS3Disk(): string
-    {
-        return strval(config('datatables-export.s3_disk', ''));
     }
 
     /**
@@ -279,7 +274,15 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
-     * @param array $data
+     * @return string
+     */
+    protected function getS3Disk(): string
+    {
+        return strval(config('datatables-export.s3_disk', ''));
+    }
+
+    /**
+     * @param  array  $data
      * @return void
      */
     public function sendResults(array $data): void
@@ -287,7 +290,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         Mail::send('datatables-export::export-email', $data, function ($message) use ($data) {
             $message->attach($data['path']);
             $message->to($data['email'])
-                ->subject('Export Report');
+                    ->subject('Export Report');
             $message->from(config('datatables-export.mail_from'));
         });
     }
