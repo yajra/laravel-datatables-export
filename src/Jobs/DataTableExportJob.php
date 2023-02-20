@@ -113,11 +113,13 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
         }
 
         $columns = $this->getExportableColumns($oTable);
-        $writer->addRow(
-            Row::fromValues(
-                $columns->map(fn (Column $column) => strip_tags($column->title))->toArray()
-            )
-        );
+        $headers = [];
+
+        $columns->each(function (Column $column) use (&$headers) {
+            $headers[] = strip_tags($column->title);
+        });
+
+        $writer->addRow(Row::fromValues($headers));
 
         if ($this->usesLazyMethod()) {
             $chunkSize = intval(config('datatables-export.chunk', 1000));
@@ -145,7 +147,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                     $property = $property['_'] ?? $column->name;
                 }
 
-                /** @var array|bool|int|string|null $value */
+                /** @var array|bool|int|string|null|DateTimeInterface $value */
                 $value = $row[$property] ?? '';
 
                 if (is_array($value)) {
