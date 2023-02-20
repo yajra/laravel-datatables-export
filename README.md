@@ -1,6 +1,6 @@
 # Laravel DataTables Export Plugin
 
-[![Laravel 8|9](https://img.shields.io/badge/Laravel-8|9-orange.svg)](http://laravel.com)
+[![Laravel 8|9|10](https://img.shields.io/badge/Laravel-8|9|10-orange.svg)](http://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![Continuous Integration](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml)
 [![Static Analysis](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml)
@@ -11,11 +11,11 @@ This package is a plugin of [Laravel DataTables](https://github.com/yajra/larave
 
 ## Requirements
 
-- [PHP >=7.4](http://php.net/)
-- [Laravel 8+](https://github.com/laravel/framework)
+- [PHP >=8.1](http://php.net/)
+- [Laravel 10](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
 - [OpenSpout](https://github.com/openspout/openspout/)
-- [Laravel DataTables 9.x](https://github.com/yajra/laravel-datatables)
+- [Laravel DataTables 10.x](https://github.com/yajra/laravel-datatables)
 - [jQuery DataTables v1.10.x](http://datatables.net/)
 
 ## Documentations
@@ -24,7 +24,7 @@ This package is a plugin of [Laravel DataTables](https://github.com/yajra/larave
 
 ## Quick Installation
 
-`composer require yajra/laravel-datatables-export -W`
+`composer require yajra/laravel-datatables-export`
 
 The package also requires batch job:
 
