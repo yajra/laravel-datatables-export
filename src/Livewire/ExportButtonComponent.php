@@ -19,6 +19,8 @@ class ExportButtonComponent extends Component
 
     public ?string $tableId;
 
+    public ?string $emailTo = '';
+
     public string $type = 'xlsx';
 
     public string $filename = '';
