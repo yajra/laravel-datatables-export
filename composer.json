@@ -22,7 +22,7 @@
     "livewire/livewire": "^2.11.2",
     "openspout/openspout": "^4.12.1",
     "phpoffice/phpspreadsheet": "^1.27",
-    "yajra/laravel-datatables-buttons": "10.*"
+    "yajra/laravel-datatables": "^10.0"
   },
   "require-dev": {
     "nunomaduro/larastan": "^2.4.1",
@@ -45,7 +45,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.0-dev"
+      "dev-master": "10.0-dev"
     },
     "laravel": {
       "providers": [
