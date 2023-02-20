@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v1.2.0 - 02-20-2023
+
+- feat: Implement optional email results #46
+
 ## v1.1.0 - 01-18-2023
 
 - feat: add ability to use s3 storage #45
