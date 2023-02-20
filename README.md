@@ -7,7 +7,8 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
-This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side exporting using Queue, OpenSpout and Livewire.
+This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side
+exporting using Queue, OpenSpout and Livewire.
 
 ## Requirements
 
@@ -21,6 +22,14 @@ This package is a plugin of [Laravel DataTables](https://github.com/yajra/larave
 ## Documentations
 
 - [Laravel DataTables Documentation](http://yajrabox.com/docs/laravel-datatables)
+
+## Laravel Version Compatibility
+
+| Laravel | Package |
+|:--------|:--------|
+| 8.x     | 0.x     |
+| 9.x     | 1.x     |
+| 10.x    | 10.x    |
 
 ## Quick Installation
 
@@ -46,7 +55,8 @@ php artisan migrate
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
 ```html
-<livewire:export-button :table-id="$dataTable->getTableId()" />
+
+<livewire:export-button :table-id="$dataTable->getTableId()"/>
 ```
 
 2. On your `DataTable` class, use `WithExportQueue`
@@ -77,10 +87,11 @@ $schedule->command('datatables:purge-export')->weekly();
 You can set the export filename by setting the property.
 
 ```html
-<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" />
-<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv" />
 
-<livewire:export-button :table-id="$dataTable->getTableId()" :filename="$filename" />
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx"/>
+<livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv"/>
+
+<livewire:export-button :table-id="$dataTable->getTableId()" :filename="$filename"/>
 ```
 
 ## Export Type
@@ -88,16 +99,18 @@ You can set the export filename by setting the property.
 You can set the export type by setting the property to `csv` or `xlsx`. Default value is `xlsx`.
 
 ```html
-<livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" />
-<livewire:export-button :table-id="$dataTable->getTableId()" type="csv" />
+
+<livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx"/>
+<livewire:export-button :table-id="$dataTable->getTableId()" type="csv"/>
 ```
 
 ## Set Excel Sheet Name
 
-Option 1: You can set the Excel sheet name by setting the property. 
+Option 1: You can set the Excel sheet name by setting the property.
 
 ```html
-<livewire:export-button :table-id="$dataTable->getTableId()" sheet-name="Monthly Report" />
+
+<livewire:export-button :table-id="$dataTable->getTableId()" sheet-name="Monthly Report"/>
 ```
 
 Option 2: You can also set the Excel sheet name by overwriting the method.
@@ -185,16 +198,19 @@ Column::make('id')->exportFormat(NumberFormat::FORMAT_TEXT),
 Option to automatically download the exported file.
 
 ```html
+
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx" auto-download="true"/>
 ```
 
 ## Contributing
 
-Please see [CONTRIBUTING](https://github.com/yajra/laravel-datatables-export/blob/master/.github/CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](https://github.com/yajra/laravel-datatables-export/blob/master/.github/CONTRIBUTING.md) for
+details.
 
 ## Security
 
-If you discover any security related issues, please email [aqangeles@gmail.com](mailto:aqangeles@gmail.com) instead of using the issue tracker.
+If you discover any security related issues, please email [aqangeles@gmail.com](mailto:aqangeles@gmail.com) instead of
+using the issue tracker.
 
 ## Credits
 
@@ -204,4 +220,5 @@ If you discover any security related issues, please email [aqangeles@gmail.com](
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/yajra/laravel-datatables-export/blob/master/LICENSE.md) for more information.
+The MIT License (MIT). Please
+see [License File](https://github.com/yajra/laravel-datatables-export/blob/master/LICENSE.md) for more information.
