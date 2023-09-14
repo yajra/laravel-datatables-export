@@ -158,7 +158,7 @@ class DataTableExportJob implements ShouldQueue, ShouldBeUnique
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     case $this->wantsNumeric($column):
-                        $cellValue = floatval($value);
+                        $cellValue = ( trim($value) == '' || is_null($value) ) ? null : floatval($value);
                         $format = $column->exportFormat;
                         break;
                     case CellTypeHelper::isDateTimeOrDateInterval($value):
