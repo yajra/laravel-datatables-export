@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v0.14.1 - 09-14-2023
+
+- fix: return null value for empty/null strings #53
+
 ## v0.14.0 - 09-08-2022
 
 - Fix export on columns from eloquent relation #29
