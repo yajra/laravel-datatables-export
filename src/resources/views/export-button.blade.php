@@ -12,8 +12,7 @@
                     emailTo: '{{urlencode($emailTo)}}',
                 });
 
-                $.get(baseUrl + '?' + params.toString() + '&' + $.param(oTable.ajax.params()))
-                .then(function(exportId) {
+                $.get(baseUrl + '?' + params.toString() + '&' + $.param(oTable.ajax.params())).then(function(exportId) {
                     $wire.export(exportId)
                 }).catch(function(error) {
                     $wire.exportFinished = true;
@@ -35,7 +34,7 @@
     @endif
 
     @if($exporting && !$exportFinished)
-        <div class="d-inline" wire:poll.10s="updateExportProgress">Exporting...please wait.</div>
+        <div class="d-inline" wire:poll="updateExportProgress">Exporting...please wait.</div>
     @endif
 
     @if($exportFinished && !$exportFailed && !$autoDownload)
