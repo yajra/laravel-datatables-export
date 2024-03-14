@@ -3,9 +3,11 @@
 namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Yajra\DataTables\Exports\Tests\DataTables\UsersDataTable;
 use Yajra\DataTables\Exports\Tests\Models\User;
 
 abstract class TestCase extends BaseTestCase
@@ -29,10 +31,16 @@ abstract class TestCase extends BaseTestCase
         $this->seedDatabase();
     }
 
+    protected function defineRoutes($router): void
+    {
+        $router->get('/users', function (UsersDataTable $dataTable) {
+            return $dataTable->render('tests::users');
+        });
+    }
+
     protected function migrateDatabase(): void
     {
-        /** @var \Illuminate\Database\Schema\Builder $schemaBuilder */
-        $schemaBuilder = $this->app['db']->connection()->getSchemaBuilder();
+        $schemaBuilder = DB::getSchemaBuilder();
         if (! $schemaBuilder->hasTable('users')) {
             $schemaBuilder->create('users', function (Blueprint $table) {
                 $table->increments('id');
@@ -83,7 +91,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @param  \Illuminate\Foundation\Application  $app
      */
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('app.debug', true);
         $app['config']->set('queue.default', 'sync');

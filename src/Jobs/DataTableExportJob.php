@@ -45,11 +45,13 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param  int|string  $user
      */
-    public function __construct(array $dataTable, public array $request, public $user, public string $sheetName = 'Sheet1')
-    {
+    public function __construct(
+        array $dataTable,
+        public array $request,
+        public ?int $user,
+        public string $sheetName = 'Sheet1'
+    ) {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
     }
@@ -64,7 +66,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
      * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
      * @throws \OpenSpout\Writer\Exception\InvalidSheetNameException
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->user) {
             Event::forget(Login::class);
