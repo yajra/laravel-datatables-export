@@ -15,7 +15,6 @@ class UsersDataTable extends DataTable
 
     /**
      * @param  \Illuminate\Database\Eloquent\Builder<\Yajra\DataTables\Exports\Tests\Models\User>  $query
-     * @return \Yajra\DataTables\EloquentDataTable
      */
     public function dataTable(Builder $query): EloquentDataTable
     {
@@ -23,7 +22,6 @@ class UsersDataTable extends DataTable
     }
 
     /**
-     * @param  \Yajra\DataTables\Exports\Tests\Models\User  $user
      * @return \Illuminate\Database\Eloquent\Builder<\Yajra\DataTables\Exports\Tests\Models\User>
      */
     public function query(User $user): Builder
@@ -34,12 +32,12 @@ class UsersDataTable extends DataTable
     public function html(): \Yajra\DataTables\Html\Builder
     {
         return parent::html()
-                     ->setTableId('users-table')
-                     ->minifiedAjax()
-                     ->columns([
-                         Column::make('id'),
-                         Column::make('name'),
-                         Column::make('email'),
-                     ]);
+            ->setTableId('users-table')
+            ->minifiedAjax()
+            ->columns([
+                Column::make('id'),
+                Column::make('name'),
+                Column::make('email'),
+            ]);
     }
 }
