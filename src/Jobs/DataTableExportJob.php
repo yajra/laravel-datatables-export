@@ -59,7 +59,6 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
      *
      * @throws \OpenSpout\Common\Exception\IOException
      * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
