@@ -39,26 +39,28 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public string $dataTable = '';
+    /**
+     * @var class-string<DataTable>
+     */
+    public string $dataTable;
 
     public array $attributes = [];
 
     /**
-     * Create a new job instance.
+     * @param  array{class-string<DataTable>, array}  $instance
      */
     public function __construct(
-        array $dataTable,
+        array $instance,
         public array $request,
-        public ?int $user,
+        public int|string|null $user,
         public string $sheetName = 'Sheet1'
     ) {
-        $this->dataTable = $dataTable[0];
-        $this->attributes = $dataTable[1];
+        $this->dataTable = $instance[0];
+        $this->attributes = $instance[1];
     }
 
     /**
      * Execute the job.
-     *
      *
      * @throws \OpenSpout\Common\Exception\IOException
      * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
