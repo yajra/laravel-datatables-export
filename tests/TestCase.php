@@ -33,7 +33,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function defineRoutes($router): void
     {
-        $router->get('/users', fn(UsersDataTable $dataTable) => $dataTable->render('tests::users'));
+        $router->get('/users', fn (UsersDataTable $dataTable) => $dataTable->render('tests::users'));
     }
 
     protected function migrateDatabase(): void
