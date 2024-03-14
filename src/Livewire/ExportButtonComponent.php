@@ -17,7 +17,7 @@ class ExportButtonComponent extends Component
 {
     public string $class = 'btn btn-primary';
 
-    public ?string $tableId;
+    public ?string $tableId = null;
 
     public ?string $emailTo = '';
 

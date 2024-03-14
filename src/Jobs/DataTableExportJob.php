@@ -43,27 +43,15 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
     public array $attributes = [];
 
-    public array $request = [];
-
-    public string $sheetName = '';
-
-    /**
-     * @var int|string
-     */
-    public $user;
-
     /**
      * Create a new job instance.
      *
      * @param  int|string  $user
      */
-    public function __construct(array $dataTable, array $request, $user, string $sheetName = 'Sheet1')
+    public function __construct(array $dataTable, public array $request, public $user, public string $sheetName = 'Sheet1')
     {
         $this->dataTable = $dataTable[0];
         $this->attributes = $dataTable[1];
-        $this->request = $request;
-        $this->user = $user;
-        $this->sheetName = $sheetName;
     }
 
     /**

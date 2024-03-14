@@ -24,8 +24,6 @@ class ExportTest extends TestCase
         parent::setUp();
 
         $router = $this->app['router'];
-        $router->get('/users', function (UsersDataTable $dataTable) {
-            return $dataTable->render('tests::users');
-        });
+        $router->get('/users', fn (UsersDataTable $dataTable) => $dataTable->render('tests::users'));
     }
 }
