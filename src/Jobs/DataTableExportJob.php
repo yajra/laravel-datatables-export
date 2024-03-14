@@ -82,9 +82,12 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
-        $exportType = strtolower(strval(request('exportType')));
+        $type = 'xlsx';
+        $exportType = request('export_type', 'xlsx');
+        if (is_string($exportType)) {
+            $type = Str::of($exportType)->startsWith('csv') ? 'csv' : 'xlsx';
+        }
 
-        $type = Str::startsWith($exportType, 'csv') ? 'csv' : 'xlsx';
         $filename = $this->batchId.'.'.$type;
 
         $path = Storage::disk($this->getDisk())->path($filename);
@@ -108,7 +111,10 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         $writer->addRow(Row::fromValues($headers));
 
         if ($this->usesLazyMethod()) {
-            $chunkSize = intval(config('datatables-export.chunk', 1000));
+            $chunkSize = 1_000;
+            if (is_int(config('datatables-export.chunk'))) {
+                $chunkSize = config('datatables-export.chunk');
+            }
             $query = $dataTable->getFilteredQuery()->lazy($chunkSize);
         } else {
             $query = $dataTable->getFilteredQuery()->cursor();
@@ -123,7 +129,12 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
                 $row = Arr::dot($row);
             }
 
-            $defaultDateFormat = strval(config('datatables-export.default_date_format', 'yyyy-mm-dd'));
+            $defaultDateFormat = 'yyyy-mm-dd';
+            if (config('datatables-export.default_date_format')
+                && is_string(config('datatables-export.default_date_format'))
+            ) {
+                $defaultDateFormat = config('datatables-export.default_date_format');
+            }
 
             $columns->map(function (Column $column) use ($row, &$cells, $defaultDateFormat) {
                 $property = $column->data;
@@ -142,15 +153,27 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
                 switch (true) {
                     case $this->wantsText($column):
-                        $cellValue = strval($value);
+                        if ($value instanceof DateTimeInterface) {
+                            $cellValue = $value->format($defaultDateFormat);
+                        } else {
+                            $cellValue = strval($value);
+                        }
                         $format = $column->exportFormat ?? '@';
                         break;
                     case $this->wantsDateFormat($column):
-                        $cellValue = $value ? DateHelper::toExcel(Carbon::parse(strval($value))) : '';
+                        if ($value instanceof DateTimeInterface) {
+                            $cellValue = DateHelper::toExcel($value);
+                        } else {
+                            $cellValue = $value ? DateHelper::toExcel(Carbon::parse(strval($value))) : '';
+                        }
                         $format = $column->exportFormat ?? $defaultDateFormat;
                         break;
                     case $this->wantsNumeric($column):
-                        $cellValue = floatval($value);
+                        if ($value instanceof DateTimeInterface) {
+                            $cellValue = 0.0;
+                        } else {
+                            $cellValue = floatval($value);
+                        }
                         $format = $column->exportFormat;
                         break;
                     case $value instanceof DateTimeInterface:
@@ -174,15 +197,21 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
 
-        if (request('emailTo')) {
-            $data = ['email' => urldecode(strval(request('emailTo'))), 'path' => $path];
+        $emailTo = request('emailTo');
+        if ($emailTo && is_string($emailTo)) {
+            $data = ['email' => urldecode($emailTo), 'path' => $path];
             $this->sendResults($data);
         }
     }
 
     protected function getDisk(): string
     {
-        return strval(config('datatables-export.disk', 'local'));
+        $disk = 'local';
+        if (is_string(config('datatables-export.disk'))) {
+            $disk = config('datatables-export.disk');
+        }
+
+        return $disk;
     }
 
     /**
@@ -241,7 +270,12 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
     protected function getS3Disk(): string
     {
-        return strval(config('datatables-export.s3_disk', ''));
+        $disk = '';
+        if (config('datatables-export.s3_disk') && is_string(config('datatables-export.s3_disk'))) {
+            $disk = config('datatables-export.s3_disk');
+        }
+
+        return $disk;
     }
 
     public function sendResults(array $data): void
