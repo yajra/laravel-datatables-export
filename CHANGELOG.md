@@ -2,7 +2,12 @@
 
 ## UNRELEASED
 
-## v11.0.0 - 11-14-2023
+## v11.0.1 - 2024-04-16
+
+- fix: Export button URL: Merge new with existing query params #58
+- fix #57 - Handle new params with existing query params in the export button URL
+
+## v11.0.0 - 2023-03-14
 
 - Laravel 11.x support
 - Use Pest for testing
