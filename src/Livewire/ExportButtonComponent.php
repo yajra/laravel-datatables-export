@@ -25,6 +25,8 @@ class ExportButtonComponent extends Component
 
     public string $filename = '';
 
+    public string $buttonName = 'Export';
+
     public string $sheetName = 'Sheet1';
 
     public bool $autoDownload = false;

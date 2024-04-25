@@ -10,6 +10,7 @@
                 searchParams.set('action', 'exportQueue');
                 searchParams.set('exportType', '{{$fileType}}');
                 searchParams.set('sheetName', '{{$sheetName}}');
+                searchParams.set('buttonName', '{{$buttonName}}');
                 searchParams.set('emailTo', '{{urlencode($emailTo)}}');
 
                 var tableParams = $.param(oTable.ajax.params());
@@ -35,7 +36,7 @@
                 x-ref="exportBtn"
                 :disabled="$wire.exporting"
                 class="{{ $class }}"
-        >Export
+        >{{$buttonName}}
         </button>
     </form>
 
