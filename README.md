@@ -88,11 +88,21 @@ $schedule->command('datatables:purge-export')->weekly();
 You can set the export filename by setting the property.
 
 ```html
-
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.xlsx"/>
 <livewire:export-button :table-id="$dataTable->getTableId()" filename="my-table.csv"/>
 
 <livewire:export-button :table-id="$dataTable->getTableId()" :filename="$filename"/>
+```
+
+## Export Button Name
+
+You can set the export button name by setting the `buttonName` property.
+
+```html
+<!-- Examples demonstrating how to customize the button name for different scenarios -->
+<livewire:export-button :table-id="$dataTable->getTableId()" type="xlsx" buttonName="Export Excel"/>
+<livewire:export-button :table-id="$dataTable->getTableId()" type="csv"  buttonName="Export CSV"/>
+
 ```
 
 ## Export Type
