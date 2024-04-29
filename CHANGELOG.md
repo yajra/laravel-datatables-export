@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v11.1.0 - 2024-04-29
+
+- feat: add button name option #59
+
 ## v11.0.1 - 2024-04-16
 
 - fix: Export button URL: Merge new with existing query params #58
