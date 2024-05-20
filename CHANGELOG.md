@@ -2,6 +2,12 @@
 
 ## UNRELEASED
 
+## v11.1.1 - 2024-04-29
+
+- fix: pestphp require-dev #61
+- bump deps 
+- fix: yajra/laravel-datatables#3136
+
 ## v11.1.0 - 2024-04-29
 
 - feat: add button name option #59
