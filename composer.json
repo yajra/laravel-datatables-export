@@ -19,18 +19,18 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
-        "livewire/livewire": "^2.11.2|^3.0.1",
-        "openspout/openspout": "^4.12.1",
-        "phpoffice/phpspreadsheet": "^1.27",
-        "yajra/laravel-datatables-buttons": "^11.0",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-laravel": "^2.3"
+        "livewire/livewire": "^2.11.2|^3.4.12",
+        "openspout/openspout": "^4.24.1",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "yajra/laravel-datatables-buttons": "^11.0"
     },
     "require-dev": {
-        "larastan/larastan": "^2.9.1",
-        "orchestra/testbench": "^9",
-        "laravel/pint": "^1.14",
-        "rector/rector": "^1.0"
+        "larastan/larastan": "^2.9.6",
+        "orchestra/testbench": "^9.0.4",
+        "pestphp/pest": "^2.34.7",
+        "pestphp/pest-plugin-laravel": "^2.4",
+        "laravel/pint": "^1.15.3",
+        "rector/rector": "^1.1"
     },
     "autoload": {
         "psr-4": {
