@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v11.3.1 - 2024-11-29
+
+- fix: November phpoffice/phpspreadsheet vulnerabilities #67
+- fix #66
+
 ## v11.3.0 - 2024-10-09
 
 - fix: `phpoffice/phpspreadsheet` vulnerabilities #64
