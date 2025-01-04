@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v11.3.3 - 2025-01-04
+
+- fix: phpoffice vulnerabilities #69
+
 ## v11.3.2 - 2024-12-04
 
 - fix: https://github.com/yajra/laravel-datatables-export/issues/68
