@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+## v11.4.0 - 2025-02-19
+
+- feat: Support exportRender option #71
+- fix: #70
+
 ## v11.3.3 - 2025-01-04
 
 - fix: phpoffice vulnerabilities #69
