@@ -76,7 +76,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
         /** @var DataTable $oTable */
         $oTable = resolve($this->dataTable);
-        request()->merge($this->request);
+        request()->replace($this->request);
 
         $query = app()->call([$oTable->with($this->attributes), 'query']);
 
