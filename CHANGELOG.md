@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v11.4.2 - 2025-02-26
+
+- fix: replace export request #73
+
 ## v11.4.1 - 2025-02-19
 
 - fix: allow phpoffice v1 #72
