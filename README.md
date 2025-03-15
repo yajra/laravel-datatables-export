@@ -35,7 +35,9 @@ exporting using Queue, OpenSpout and Livewire.
 
 ## Quick Installation
 
-`composer require yajra/laravel-datatables-export:^12.0`
+```
+composer require yajra/laravel-datatables-export:"^12.0"
+```
 
 The package also requires batch job:
 
