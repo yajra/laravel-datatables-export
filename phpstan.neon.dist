@@ -14,7 +14,6 @@ parameters:
         -   identifier: argument.type
         -   identifier: method.nonObject
         -   identifier: missingType.iterableValue
-        -   identifier: varTag.nativeType
 
     excludePaths:
         - tests
