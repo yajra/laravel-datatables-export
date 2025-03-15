@@ -46,7 +46,9 @@ php artisan migrate
 
 ### Configuration and Assets (Optional)
 
-`$ php artisan vendor:publish --tag=datatables-export --force`
+```
+php artisan vendor:publish --tag=datatables-export --force
+```
 
 ## Usage
 
