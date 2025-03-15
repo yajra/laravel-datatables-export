@@ -44,11 +44,7 @@ php artisan queue:batches-table
 php artisan migrate
 ```
 
-#### Service Provider (Optional since Laravel 5.5+)
-
-`Yajra\DataTables\ExportServiceProvider::class`
-
-#### Configuration and Assets (Optional)
+### Configuration and Assets (Optional)
 
 `$ php artisan vendor:publish --tag=datatables-export --force`
 
