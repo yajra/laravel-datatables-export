@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v11.4.3 - 2025-04-12
+
+- fix: use tmp path on s3 #76
+
 ## v11.4.2 - 2025-02-26
 
 - fix: replace export request #73
