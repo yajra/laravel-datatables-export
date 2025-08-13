@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+## v12.1.0 - 2025-08-13
+
+- feat: Add PHPSpreadsheet 5 support #79
+
 ## v12.0.2 - 2025-06-11
 
 - fix: support for array notation #77
