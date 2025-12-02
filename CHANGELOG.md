@@ -1,3 +1,10 @@
+## [12.1.1](https://github.com/yajra/laravel-datatables-export/compare/v12.1.0...v12.1.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* change to unescaped output ([b4c8bac](https://github.com/yajra/laravel-datatables-export/commit/b4c8bac3c5ff82814fb22c3ffcabc565ab43351e))
+
 # Laravel DataTables Export Plugin CHANGELOG.
 
 ## UNRELEASED
