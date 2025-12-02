@@ -198,7 +198,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
 
-        $emailTo = request('emailTo');
+        $emailTo = request()->emailTo;
         if ($emailTo && is_string($emailTo)) {
             $data = ['email' => urldecode($emailTo), 'path' => $path];
             $this->sendResults($data);
