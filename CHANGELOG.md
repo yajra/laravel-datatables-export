@@ -1,3 +1,10 @@
+# [12.2.0](https://github.com/yajra/laravel-datatables-export/compare/v12.1.1...v12.2.0) (2026-01-13)
+
+
+### Features
+
+* Support QueryBuilder ([#87](https://github.com/yajra/laravel-datatables-export/issues/87)) ([05bcd2a](https://github.com/yajra/laravel-datatables-export/commit/05bcd2a7d1017330377c9384b3c4c0af14beb0c7))
+
 ## [12.1.1](https://github.com/yajra/laravel-datatables-export/compare/v12.1.0...v12.1.1) (2025-12-02)
 
 
