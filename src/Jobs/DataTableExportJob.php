@@ -225,7 +225,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         return $columns->filter(fn (Column $column) => $column->exportable);
     }
 
-    protected function getValue(array|Model $row, string $property): mixed
+    protected function getValue(array|Model|\stdClass $row, string $property): mixed
     {
         [$currentProperty, $glue, $childProperty] = array_pad(preg_split('/\[(.*?)\]\.?/', $property, 2, PREG_SPLIT_DELIM_CAPTURE), 3, null);
 
