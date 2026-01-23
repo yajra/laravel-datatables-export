@@ -1,3 +1,10 @@
+# [12.3.0](https://github.com/yajra/laravel-datatables-export/compare/v12.2.0...v12.3.0) (2026-01-23)
+
+
+### Features
+
+* livewire 4 ([ce9724b](https://github.com/yajra/laravel-datatables-export/commit/ce9724b12a73beaef44f64110b23f1a9b98a4631))
+
 # [12.2.0](https://github.com/yajra/laravel-datatables-export/compare/v12.1.1...v12.2.0) (2026-01-13)
 
 
