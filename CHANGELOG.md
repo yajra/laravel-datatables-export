@@ -1,3 +1,10 @@
+## [12.3.1](https://github.com/yajra/laravel-datatables-export/compare/v12.3.0...v12.3.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* check if glue is not null ([6537263](https://github.com/yajra/laravel-datatables-export/commit/65372633b372d1e82ca3065f8c04e8b32cdaf82d))
+
 # [12.3.0](https://github.com/yajra/laravel-datatables-export/compare/v12.2.0...v12.3.0) (2026-01-23)
 
 
