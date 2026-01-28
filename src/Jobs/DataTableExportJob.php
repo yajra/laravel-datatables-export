@@ -240,7 +240,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             $value = Arr::map($value, fn ($v) => $this->getValue($v, $childProperty));
         }
 
-        return $glue ? Arr::join($value, $glue) : $value;
+        return isset($glue) ? Arr::join($value, $glue) : $value;
     }
 
     protected function usesLazyMethod(): bool
