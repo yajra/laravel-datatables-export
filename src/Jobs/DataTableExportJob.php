@@ -141,7 +141,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
                 }
 
                 /** @var array|bool|int|string|null|DateTimeInterface $value */
-                $value = $this->getValue($row, $property) ?? '';
+                $value = $this->getValue($row, $property);
 
                 if (isset($column->exportRender)) {
                     $callback = $column->exportRender;
