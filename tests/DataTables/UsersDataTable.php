@@ -14,7 +14,7 @@ class UsersDataTable extends DataTable
     use WithExportQueue;
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder<\Yajra\DataTables\Exports\Tests\Models\User>  $query
+     * @param  Builder<User>  $query
      */
     public function dataTable(Builder $query): EloquentDataTable
     {
@@ -22,13 +22,14 @@ class UsersDataTable extends DataTable
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<\Yajra\DataTables\Exports\Tests\Models\User>
+     * @return Builder<User>
      */
     public function query(User $user): Builder
     {
         return $user->newQuery();
     }
 
+    #[\Override]
     public function html(): \Yajra\DataTables\Html\Builder
     {
         return parent::html()
