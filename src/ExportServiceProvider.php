@@ -30,6 +30,7 @@ class ExportServiceProvider extends ServiceProvider
         ], 'datatables-export');
     }
 
+    #[\Override]
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/config/datatables-export.php', 'datatables-export');

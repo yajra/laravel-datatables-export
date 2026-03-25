@@ -3,12 +3,18 @@
 namespace Yajra\DataTables\Exports\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Yajra\DataTables\ButtonsServiceProvider;
+use Yajra\DataTables\DataTablesServiceProvider;
 use Yajra\DataTables\Exports\Tests\DataTables\UsersDataTable;
 use Yajra\DataTables\Exports\Tests\Models\User;
+use Yajra\DataTables\ExportServiceProvider;
+use Yajra\DataTables\Facades\DataTables;
+use Yajra\DataTables\HtmlServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -87,7 +93,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Set up the environment.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      */
     protected function getEnvironmentSetUp($app): void
     {
@@ -106,17 +112,17 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Yajra\DataTables\DataTablesServiceProvider::class,
-            \Yajra\DataTables\HtmlServiceProvider::class,
-            \Yajra\DataTables\ButtonsServiceProvider::class,
-            \Yajra\DataTables\ExportServiceProvider::class,
+            DataTablesServiceProvider::class,
+            HtmlServiceProvider::class,
+            ButtonsServiceProvider::class,
+            ExportServiceProvider::class,
         ];
     }
 
     protected function getPackageAliases($app): array
     {
         return [
-            'DataTables' => \Yajra\DataTables\Facades\DataTables::class,
+            'DataTables' => DataTables::class,
         ];
     }
 }

@@ -1,6 +1,6 @@
 # Laravel DataTables Export Plugin
 
-[![Laravel 12.x](https://img.shields.io/badge/Laravel-12.x-orange.svg)](http://laravel.com)
+[![Laravel 13.x](https://img.shields.io/badge/Laravel-13.x-orange.svg)](http://laravel.com)
 [![Latest Stable Version](https://img.shields.io/packagist/v/yajra/laravel-datatables-export.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 [![Continuous Integration](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/continuous-integration.yml)
 [![Static Analysis](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/yajra/laravel-datatables-export/actions/workflows/static-analysis.yml)
@@ -12,11 +12,11 @@ exporting using Queue, OpenSpout and Livewire.
 
 ## Requirements
 
-- [PHP >=8.2](http://php.net/)
-- [Laravel 12](https://github.com/laravel/framework)
+- [PHP >=8.3](http://php.net/)
+- [Laravel 13](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
 - [OpenSpout](https://github.com/openspout/openspout/)
-- [Laravel DataTables 12.x](https://github.com/yajra/laravel-datatables)
+- [Laravel DataTables 13.x](https://github.com/yajra/laravel-datatables)
 - [jQuery DataTables 2.x](http://datatables.net/)
 
 ## Documentations
@@ -32,11 +32,12 @@ exporting using Queue, OpenSpout and Livewire.
 | 10.x    | 10.x    |
 | 11.x    | 11.x    |
 | 12.x    | 12.x    |
+| 13.x    | 13.x    |
 
 ## Quick Installation
 
 ```
-composer require yajra/laravel-datatables-export:"^12.0"
+composer require yajra/laravel-datatables-export:"^13.0"
 ```
 
 The package also requires batch job:

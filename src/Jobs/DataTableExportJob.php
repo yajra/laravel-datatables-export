@@ -24,11 +24,16 @@ use Illuminate\Support\Str;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Exception\IOException;
+use OpenSpout\Common\Exception\UnsupportedTypeException;
 use OpenSpout\Writer\Common\Creator\WriterFactory;
+use OpenSpout\Writer\Exception\InvalidSheetNameException;
+use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\XLSX\Helper\DateHelper;
 use OpenSpout\Writer\XLSX\Writer as XLSXWriter;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
+use Yajra\DataTables\QueryDataTable;
 use Yajra\DataTables\Services\DataTable;
 
 class DataTableExportJob implements ShouldBeUnique, ShouldQueue
@@ -62,10 +67,10 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
     /**
      * Execute the job.
      *
-     * @throws \OpenSpout\Common\Exception\IOException
-     * @throws \OpenSpout\Common\Exception\UnsupportedTypeException
-     * @throws \OpenSpout\Writer\Exception\WriterNotOpenedException
-     * @throws \OpenSpout\Writer\Exception\InvalidSheetNameException
+     * @throws IOException
+     * @throws UnsupportedTypeException
+     * @throws WriterNotOpenedException
+     * @throws InvalidSheetNameException
      */
     public function handle(): void
     {
@@ -80,7 +85,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
         $query = app()->call([$oTable->with($this->attributes), 'query']);
 
-        /** @var \Yajra\DataTables\QueryDataTable $dataTable */
+        /** @var QueryDataTable $dataTable */
         $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
         $dataTable->skipPaging();
 
@@ -216,7 +221,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
     }
 
     /**
-     * @return \Illuminate\Support\Collection<array-key, Column>
+     * @return Collection<array-key, Column>
      */
     protected function getExportableColumns(DataTable $dataTable): Collection
     {

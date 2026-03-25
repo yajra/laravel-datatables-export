@@ -5,9 +5,10 @@ namespace Yajra\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Yajra\DataTables\Jobs\DataTableExportJob;
+use Yajra\DataTables\Services\DataTable;
 
 /**
- * @mixin \Yajra\DataTables\Services\DataTable
+ * @mixin DataTable
  */
 trait WithExportQueue
 {
@@ -36,7 +37,7 @@ trait WithExportQueue
     public function exportQueue(): string
     {
         $job = new DataTableExportJob(
-            [get_class($this), $this->attributes],
+            [$this::class, $this->attributes],
             request()->all(),
             Auth::id() ?? 0,
             $this->sheetName(),
