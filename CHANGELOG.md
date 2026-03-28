@@ -19,9 +19,6 @@
 
 * openspout v5 ([d2585d8](https://github.com/yajra/laravel-datatables-export/commit/d2585d8bf5756d56734ec4dacb4318170ffa1ef9))
 
-## Unreleased
-
-- Support **OpenSpout ^4.24.5 or ^5.0** (cell styling adapts to each major); PHP **^8.3** with OpenSpout 5 only installable on **PHP 8.4+** per upstream
 
 ## v13.0.0 - 2026-03-25
 
