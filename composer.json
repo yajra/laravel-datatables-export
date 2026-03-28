@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "ext-json": "*",
         "livewire/livewire": "^4.2.2",
         "openspout/openspout": "^5.6",

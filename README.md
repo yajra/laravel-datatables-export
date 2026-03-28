@@ -12,7 +12,7 @@ exporting using Queue, OpenSpout and Livewire.
 
 ## Requirements
 
-- [PHP >=8.3](http://php.net/)
+- [PHP >=8.4](http://php.net/)
 - [Laravel 13](https://github.com/laravel/framework)
 - [Laravel Livewire](https://laravel-livewire.com/)
 - [OpenSpout](https://github.com/openspout/openspout/)
