@@ -9,7 +9,6 @@ parameters:
     level: max
 
     ignoreErrors:
-        - '#Parameter \#1 \$callback of method Illuminate\\Container\\Container::call\(\) expects \(callable\(\): mixed\)\|string*#'
         -   identifier: trait.unused
         -   identifier: argument.type
         -   identifier: method.nonObject
@@ -17,6 +16,7 @@ parameters:
 
     excludePaths:
         - tests
+        - src/Support/OpenSpoutExportStyle.php
 
     noEnvCallsOutsideOfConfig: false
 

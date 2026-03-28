@@ -2,7 +2,7 @@
 
 ## Upgrade from 12.x to 13.x
 
-1. Use **PHP 8.3+** and **Laravel 13.x** ([Yajra DataTables upgrade guide](https://yajrabox.com/docs/laravel-datatables/master/upgrade)).
+1. Use **PHP 8.3+** and **Laravel 13.x** ([Yajra DataTables upgrade guide](https://yajrabox.com/docs/laravel-datatables/master/upgrade)). If Composer resolves **OpenSpout 5.x**, your runtime must meet its requirement (**PHP 8.4+**).
 
 2. Update `composer.json`:
 
@@ -20,7 +20,17 @@
 php artisan vendor:publish --tag=datatables-export --force
 ```
 
-v13 aligns with `yajra/laravel-datatables-*` v13 and has no intentional breaking changes beyond the new PHP/Laravel requirements.
+### Dependency requirements (v13)
+
+Composer will not resolve until your app matches these **peer-style** constraints (they are declared as direct `require` entries on this package):
+
+| Package | Minimum constraint | Notes |
+|--------|-------------------|--------|
+| [Livewire](https://livewire.laravel.com/docs/upgrading) | **^4.0** | Livewire v2 and v3 are no longer supported by this package. Upgrade the app to Livewire 4 first. |
+| [PhpSpreadsheet](https://github.com/PHPOffice/PhpSpreadsheet) | **^5.0** | Used for `NumberFormat` constants in config and column `exportFormat` examples. PhpSpreadsheet 4.x and older are not installed alongside current releases. |
+| [OpenSpout](https://github.com/openspout/openspout) | **^4.24.5** or **^5** | Used internally for queued export writing. **OpenSpout 4** supports PHP 8.3–8.5; **OpenSpout 5** requires PHP 8.4+. Composer picks a compatible major for your PHP version and the rest of the dependency graph. Pin `openspout/openspout` in your app if you need a specific line. |
+
+There is no application code migration for the Livewire export button beyond meeting Livewire 4’s upgrade steps in your app. Published Blade views under `resources/views/vendor/datatables-export` should be re-published or diffed after major Livewire upgrades.
 
 ## Upgrade from 10.x to 11.x
 

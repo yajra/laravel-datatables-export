@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yajra\DataTables\Jobs;
 
 use Carbon\Carbon;
@@ -21,20 +23,24 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use LogicException;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Common\Exception\UnsupportedTypeException;
-use OpenSpout\Writer\Common\Creator\WriterFactory;
+use OpenSpout\Writer\CSV\Writer as CSVWriter;
 use OpenSpout\Writer\Exception\InvalidSheetNameException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
+use OpenSpout\Writer\ODS\Writer as ODSWriter;
+use OpenSpout\Writer\WriterInterface;
 use OpenSpout\Writer\XLSX\Helper\DateHelper;
 use OpenSpout\Writer\XLSX\Writer as XLSXWriter;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\QueryDataTable;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\Support\OpenSpoutExportStyle;
 
 class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 {
@@ -83,10 +89,19 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         $oTable = resolve($this->dataTable);
         request()->replace($this->request);
 
-        $query = app()->call([$oTable->with($this->attributes), 'query']);
+        $tableWithAttributes = $oTable->with($this->attributes);
+        $queryCallable = [$tableWithAttributes, 'query'];
+        if (! is_callable($queryCallable)) {
+            throw new LogicException('DataTable::query must be callable.');
+        }
+        $query = app()->call($queryCallable);
 
+        $dataTableCallable = [$oTable, 'dataTable'];
+        if (! is_callable($dataTableCallable)) {
+            throw new LogicException('DataTable::dataTable must be callable.');
+        }
         /** @var QueryDataTable $dataTable */
-        $dataTable = app()->call([$oTable, 'dataTable'], compact('query'));
+        $dataTable = app()->call($dataTableCallable, compact('query'));
         $dataTable->skipPaging();
 
         $type = 'xlsx';
@@ -99,7 +114,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
         $path = Storage::disk($this->getDisk())->path($filename);
 
-        $writer = WriterFactory::createFromFile($filename);
+        $writer = $this->createWriterForExtension(strtolower(pathinfo($filename, PATHINFO_EXTENSION)));
         $writer->openToFile($path);
 
         if ($writer instanceof XLSXWriter) {
@@ -191,7 +206,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
                         $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 
-                $cells[] = Cell::fromValue($cellValue, (new Style)->setFormat($format));
+                $cells[] = Cell::fromValue($cellValue, $this->styleForExportFormat($format));
             });
 
             $writer->addRow(new Row($cells));
@@ -208,6 +223,28 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             $data = ['email' => urldecode($emailTo), 'path' => $path];
             $this->sendResults($data);
         }
+    }
+
+    /**
+     * @throws UnsupportedTypeException
+     */
+    protected function createWriterForExtension(string $extension): WriterInterface
+    {
+        return match ($extension) {
+            'csv' => new CSVWriter,
+            'xlsx' => new XLSXWriter,
+            'ods' => new ODSWriter,
+            default => throw new UnsupportedTypeException('No writers supporting the given type: '.$extension),
+        };
+    }
+
+    protected function styleForExportFormat(mixed $format): ?Style
+    {
+        if (! is_string($format) || $format === '') {
+            return null;
+        }
+
+        return OpenSpoutExportStyle::forFormat($format);
     }
 
     protected function getDisk(): string
@@ -232,7 +269,11 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
     protected function getValue(array|Model|\stdClass $row, string $property): mixed
     {
-        [$currentProperty, $glue, $childProperty] = array_pad(preg_split('/\[(.*?)\]\.?/', $property, 2, PREG_SPLIT_DELIM_CAPTURE), 3, null);
+        $segments = preg_split('/\[(.*?)\]\.?/', $property, 2, PREG_SPLIT_DELIM_CAPTURE);
+        if ($segments === false) {
+            $segments = [];
+        }
+        [$currentProperty, $glue, $childProperty] = array_pad($segments, 3, null);
 
         if ($glue === '') {
             $glue = ', ';
