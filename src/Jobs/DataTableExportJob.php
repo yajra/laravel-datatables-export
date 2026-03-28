@@ -237,13 +237,13 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         };
     }
 
-    protected function styleForExportFormat(mixed $format): Style
+    protected function styleForExportFormat(mixed $format): ?Style
     {
-        if ($format === null || $format === '') {
-            return new Style;
+        if (! is_string($format) || $format === '') {
+            return null;
         }
 
-        return new Style()->withFormat((string) $format);
+        return (new Style)->withFormat($format);
     }
 
     protected function getDisk(): string
