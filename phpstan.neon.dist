@@ -16,6 +16,7 @@ parameters:
 
     excludePaths:
         - tests
+        - src/Support/OpenSpoutExportStyle.php
 
     noEnvCallsOutsideOfConfig: false
 

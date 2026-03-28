@@ -1,6 +1,6 @@
 ## Unreleased
 
-- PHP 8.4+ required (OpenSpout 5.x requires PHP 8.4 or 8.5 per upstream constraints)
+- Support **OpenSpout ^4.24.5 or ^5.0** (cell styling adapts to each major); PHP **^8.3** with OpenSpout 5 only installable on **PHP 8.4+** per upstream
 
 ## v13.0.0 - 2026-03-25
 

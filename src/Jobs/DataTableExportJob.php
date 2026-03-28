@@ -40,6 +40,7 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\QueryDataTable;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\Support\OpenSpoutExportStyle;
 
 class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 {
@@ -243,7 +244,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             return null;
         }
 
-        return (new Style)->withFormat($format);
+        return OpenSpoutExportStyle::forFormat($format);
     }
 
     protected function getDisk(): string
