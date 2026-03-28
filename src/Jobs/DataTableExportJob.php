@@ -25,8 +25,7 @@ use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Common\Exception\IOException;
-use OpenSpout\Common\Exception\UnsupportedTypeException;
-use OpenSpout\Writer\Common\Creator\WriterFactory;
+use OpenSpout\Writer\CSV\Writer as CSVWriter;
 use OpenSpout\Writer\Exception\InvalidSheetNameException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\XLSX\Helper\DateHelper;
@@ -68,7 +67,6 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
      * Execute the job.
      *
      * @throws IOException
-     * @throws UnsupportedTypeException
      * @throws WriterNotOpenedException
      * @throws InvalidSheetNameException
      */
@@ -99,7 +97,10 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
         $path = Storage::disk($this->getDisk())->path($filename);
 
-        $writer = WriterFactory::createFromFile($filename);
+        $writer = match ($type) {
+            'csv' => new CSVWriter,
+            default => new XLSXWriter,
+        };
         $writer->openToFile($path);
 
         if ($writer instanceof XLSXWriter) {
@@ -191,7 +192,10 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
                         $format = $column->exportFormat ?? NumberFormat::FORMAT_GENERAL;
                 }
 
-                $cells[] = Cell::fromValue($cellValue, (new Style)->setFormat($format));
+                $cellStyle = is_string($format) && $format !== ''
+                    ? (new Style)->withFormat($format)
+                    : null;
+                $cells[] = Cell::fromValue($cellValue, $cellStyle);
             });
 
             $writer->addRow(new Row($cells));
