@@ -1,3 +1,10 @@
+## [13.1.1](https://github.com/yajra/laravel-datatables-export/compare/v13.1.0...v13.1.1) (2026-03-28)
+
+
+### Bug Fixes
+
+* Do not replace empty values by null ([d672b6d](https://github.com/yajra/laravel-datatables-export/commit/d672b6d64a1f8fa5fd181e5afc47932fd4d32e07))
+
 # [13.1.0](https://github.com/yajra/laravel-datatables-export/compare/v13.0.0...v13.1.0) (2026-03-28)
 
 
