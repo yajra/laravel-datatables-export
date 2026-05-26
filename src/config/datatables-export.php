@@ -106,4 +106,15 @@ return [
     'purge' => [
         'days' => 1,
     ],
+
+    /*
+     * --------------------------------------------------------------------------
+     * Export Queue Name
+     * --------------------------------------------------------------------------
+     *
+     * The name of the queue connection to use for processing the export batch jobs.
+     * If this is set to null, the jobs will be pushed to the application's default queue.
+     *
+     */
+    'queue' => env('DATATABLES_EXPORT_QUEUE', null),
 ];
