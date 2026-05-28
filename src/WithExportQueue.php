@@ -43,7 +43,10 @@ trait WithExportQueue
             $this->sheetName(),
         );
 
-        $batch = Bus::batch([$job])->name('datatables-export')->dispatch();
+        $batch = Bus::batch([$job])
+            ->name('datatables-export')
+            ->when(config('datatables-export.queue'), fn($batch, $queue) => $batch->onQueue($queue))
+            ->dispatch();
 
         return $batch->id;
     }
