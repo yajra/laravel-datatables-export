@@ -1,3 +1,15 @@
+# [13.2.0](https://github.com/yajra/laravel-datatables-export/compare/v13.1.1...v13.2.0) (2026-05-28)
+
+
+### Bug Fixes
+
+* pint :robot: ([861ed6c](https://github.com/yajra/laravel-datatables-export/commit/861ed6cf0aee87642b5885b3deb7b08c9bee19f0))
+
+
+### Features
+
+* make queue configurable ([#94](https://github.com/yajra/laravel-datatables-export/issues/94)) ([629ad35](https://github.com/yajra/laravel-datatables-export/commit/629ad356c7933ecba451baaf319dead40bd45d09))
+
 ## [13.1.1](https://github.com/yajra/laravel-datatables-export/compare/v13.1.0...v13.1.1) (2026-03-28)
 
 
