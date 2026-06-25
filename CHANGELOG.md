@@ -1,3 +1,10 @@
+## [13.2.1](https://github.com/yajra/laravel-datatables-export/compare/v13.2.0...v13.2.1) (2026-06-25)
+
+
+### Bug Fixes
+
+* duplicated export styles ([#95](https://github.com/yajra/laravel-datatables-export/issues/95)) ([7215308](https://github.com/yajra/laravel-datatables-export/commit/721530895ec2c6f8cf9b75f97ca347fd9bcbb3e7))
+
 # [13.2.0](https://github.com/yajra/laravel-datatables-export/compare/v13.1.1...v13.2.0) (2026-05-28)
 
 
