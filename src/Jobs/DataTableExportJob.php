@@ -58,6 +58,11 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
     public array $attributes = [];
 
     /**
+     * @var array<string, Style>
+     */
+    public array $formatStyles = [];
+
+    /**
      * @param  array{class-string<DataTable>, array}  $instance
      */
     public function __construct(
@@ -244,7 +249,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             return null;
         }
 
-        return OpenSpoutExportStyle::forFormat($format);
+        return $this->formatStyles[$format] ??= OpenSpoutExportStyle::forFormat($format);
     }
 
     protected function getDisk(): string
