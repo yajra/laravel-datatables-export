@@ -37,6 +37,10 @@ use OpenSpout\Writer\WriterInterface;
 use OpenSpout\Writer\XLSX\Helper\DateHelper;
 use OpenSpout\Writer\XLSX\Writer as XLSXWriter;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Throwable;
+use Yajra\DataTables\Events\ExportCompleted;
+use Yajra\DataTables\Events\ExportFailed;
+use Yajra\DataTables\Events\ExportStarted;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\QueryDataTable;
 use Yajra\DataTables\Services\DataTable;
@@ -69,7 +73,8 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         array $instance,
         public array $request,
         public int|string|null $user,
-        public string $sheetName = 'Sheet1'
+        public string $sheetName = 'Sheet1',
+        public string $downloadFilename = '',
     ) {
         $this->dataTable = $instance[0];
         $this->attributes = $instance[1];
@@ -94,6 +99,20 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         $oTable = resolve($this->dataTable);
         request()->replace($this->request);
 
+        $type = $this->getExportType();
+        $storedFilename = $this->getBatchId().'.'.$type;
+        $downloadFilename = $this->downloadFilename ?: $storedFilename;
+
+        Event::dispatch(new ExportStarted(
+            $this->getBatchId(),
+            $this->dataTable,
+            $this->user,
+            $type,
+            $this->getDownloadDisk(),
+            $storedFilename,
+            $downloadFilename,
+        ));
+
         $tableWithAttributes = $oTable->with($this->attributes);
         $queryCallable = [$tableWithAttributes, 'query'];
         if (! is_callable($queryCallable)) {
@@ -109,13 +128,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         $dataTable = app()->call($dataTableCallable, compact('query'));
         $dataTable->skipPaging();
 
-        $type = 'xlsx';
-        $exportType = request('export_type', 'xlsx');
-        if (is_string($exportType)) {
-            $type = Str::of($exportType)->startsWith('csv') ? 'csv' : 'xlsx';
-        }
-
-        $filename = $this->batchId.'.'.$type;
+        $filename = $storedFilename;
 
         $path = Storage::disk($this->getDisk())->path($filename);
 
@@ -223,11 +236,38 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
 
-        $emailTo = request()->emailTo;
+        $emailTo = request('emailTo', request('email_to'));
         if ($emailTo && is_string($emailTo)) {
             $data = ['email' => urldecode($emailTo), 'path' => $path];
             $this->sendResults($data);
         }
+
+        Event::dispatch(new ExportCompleted(
+            $this->getBatchId(),
+            $this->dataTable,
+            $this->user,
+            $type,
+            $this->getDownloadDisk(),
+            $storedFilename,
+            $downloadFilename,
+        ));
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        $type = $this->getExportType();
+        $storedFilename = $this->getBatchId().'.'.$type;
+
+        Event::dispatch(new ExportFailed(
+            $this->getBatchId(),
+            $this->dataTable,
+            $this->user,
+            $type,
+            $this->getDownloadDisk(),
+            $storedFilename,
+            $this->downloadFilename ?: $storedFilename,
+            $exception,
+        ));
     }
 
     /**
@@ -346,6 +386,23 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         }
 
         return $disk;
+    }
+
+    protected function getDownloadDisk(): string
+    {
+        return $this->getS3Disk() ?: $this->getDisk();
+    }
+
+    protected function getExportType(): string
+    {
+        $exportType = $this->request['export_type'] ?? $this->request['exportType'] ?? 'xlsx';
+
+        return is_string($exportType) && Str::startsWith(Str::lower($exportType), 'csv') ? 'csv' : 'xlsx';
+    }
+
+    protected function getBatchId(): string
+    {
+        return is_string($this->batchId) ? $this->batchId : '';
     }
 
     public function sendResults(array $data): void

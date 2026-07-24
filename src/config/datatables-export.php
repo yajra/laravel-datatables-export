@@ -117,4 +117,14 @@ return [
      *
      */
     'queue' => env('DATATABLES_EXPORT_QUEUE', null),
+
+    /*
+     * --------------------------------------------------------------------------
+     * Access Token Lifetime
+     * --------------------------------------------------------------------------
+     *
+     * Number of minutes that queued export status and download links remain valid.
+     *
+     */
+    'token_ttl' => 1440,
 ];
