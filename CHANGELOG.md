@@ -1,3 +1,10 @@
+## [13.2.2](https://github.com/yajra/laravel-datatables-export/compare/v13.2.1...v13.2.2) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** require patched phpspreadsheet ([9e9366d](https://github.com/yajra/laravel-datatables-export/commit/9e9366d3b5e2a6e05929527c36d309b4a3965db7))
+
 ## [13.2.1](https://github.com/yajra/laravel-datatables-export/compare/v13.2.0...v13.2.1) (2026-06-25)
 
 
