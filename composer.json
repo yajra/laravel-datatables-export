@@ -19,13 +19,13 @@
     "require": {
         "php": "^8.3",
         "ext-json": "*",
-        "livewire/livewire": "^4.2.2",
         "openspout/openspout": "^4.24.5 || ^5.0",
         "phpoffice/phpspreadsheet": "^5.8.1",
         "yajra/laravel-datatables-buttons": "^13.0.2"
     },
     "require-dev": {
         "larastan/larastan": "^3.9.3",
+        "livewire/livewire": "^4.2.2",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.4.3",
         "pestphp/pest-plugin-laravel": "^4.1",
@@ -74,6 +74,9 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "suggest": {
+        "livewire/livewire": "Required only when using the Livewire export button."
+    },
     "funding": [
         {
             "type": "github",

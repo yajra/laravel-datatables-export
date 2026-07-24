@@ -16,7 +16,9 @@ class ExportServiceProvider extends ServiceProvider
 
         $this->publishAssets();
 
-        Livewire::component('export-button', ExportButtonComponent::class);
+        if (class_exists(Livewire::class)) {
+            Livewire::component('export-button', ExportButtonComponent::class);
+        }
     }
 
     protected function publishAssets(): void
@@ -28,6 +30,10 @@ class ExportServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/resources/views' => base_path('/resources/views/vendor/datatables-export'),
         ], 'datatables-export');
+
+        $this->publishes([
+            __DIR__.'/resources/js/dataTables.queuedExport.js' => public_path('vendor/datatables/dataTables.queuedExport.js'),
+        ], 'datatables-export');
     }
 
     #[\Override]
@@ -37,6 +43,8 @@ class ExportServiceProvider extends ServiceProvider
 
         $this->commands([DataTablesPurgeExportCommand::class]);
 
-        $this->app->register(LivewireServiceProvider::class);
+        if (class_exists(LivewireServiceProvider::class)) {
+            $this->app->register(LivewireServiceProvider::class);
+        }
     }
 }

@@ -2,10 +2,11 @@
 
 namespace Yajra\DataTables;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Bus;
-use Yajra\DataTables\Jobs\DataTableExportJob;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\Support\QueuedExportManager;
 
 /**
  * @mixin DataTable
@@ -21,7 +22,21 @@ trait WithExportQueue
      */
     public function render(?string $view = null, array $data = [], array $mergeData = [])
     {
-        if (request()->ajax() && request('action') == 'exportQueue') {
+        $action = request('action');
+
+        if ($action === 'queuedExportStart') {
+            return $this->queuedExportStart();
+        }
+
+        if ($action === 'queuedExportStatus') {
+            return $this->queuedExportStatus();
+        }
+
+        if ($action === 'queuedExportDownload') {
+            return $this->queuedExportDownload();
+        }
+
+        if (request()->ajax() && $action === 'exportQueue') {
             return $this->exportQueue();
         }
 
@@ -36,19 +51,41 @@ trait WithExportQueue
      */
     public function exportQueue(): string
     {
-        $job = new DataTableExportJob(
-            [$this::class, $this->attributes],
-            request()->all(),
-            Auth::id() ?? 0,
+        $batch = $this->exportManager()->dispatch(
+            $this,
+            $this->attributes,
+            request(),
+            Auth::id(),
             $this->sheetName(),
         );
 
-        $batch = Bus::batch([$job])
-            ->name('datatables-export')
-            ->when(config('datatables-export.queue'), fn ($batch, $queue) => $batch->onQueue($queue))
-            ->dispatch();
-
         return $batch->id;
+    }
+
+    /**
+     * Start a queued export using the JSON protocol.
+     *
+     * @throws \Throwable
+     */
+    public function queuedExportStart(): JsonResponse
+    {
+        return $this->exportManager()->start(
+            $this,
+            $this->attributes,
+            request(),
+            Auth::id(),
+            $this->sheetName(),
+        );
+    }
+
+    public function queuedExportStatus(): JsonResponse
+    {
+        return $this->exportManager()->status(request());
+    }
+
+    public function queuedExportDownload(): StreamedResponse
+    {
+        return $this->exportManager()->download(request());
     }
 
     /**
@@ -57,6 +94,13 @@ trait WithExportQueue
      */
     protected function sheetName(): string
     {
-        return request('sheetName', 'Sheet1');
+        $sheetName = request('sheetName', request('sheet_name', 'Sheet1'));
+
+        return is_string($sheetName) ? $sheetName : 'Sheet1';
+    }
+
+    protected function exportManager(): QueuedExportManager
+    {
+        return resolve(QueuedExportManager::class);
     }
 }

@@ -8,13 +8,13 @@
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/yajra/laravel-datatables-export)
 
 This package is a plugin of [Laravel DataTables](https://github.com/yajra/laravel-datatables) for handling server-side
-exporting using Queue, OpenSpout and Livewire.
+exporting using Queue and OpenSpout, with optional Livewire and DataTables button integrations.
 
 ## Requirements
 
 - [PHP >=8.3](http://php.net/) (OpenSpout 5.x, if installed, requires PHP 8.4+)
 - [Laravel 13](https://github.com/laravel/framework)
-- [Laravel Livewire](https://laravel-livewire.com/)
+- [Laravel Livewire](https://livewire.laravel.com/) (optional)
 - [OpenSpout](https://github.com/openspout/openspout/)
 - [Laravel DataTables 13.x](https://github.com/yajra/laravel-datatables)
 - [jQuery DataTables 2.x](http://datatables.net/)
@@ -54,6 +54,68 @@ php artisan vendor:publish --tag=datatables-export --force
 ```
 
 ## Usage
+
+### DataTables Button (No Livewire)
+
+Publish the package assets and include the queued export button script after jQuery, DataTables, and DataTables Buttons:
+
+```shell
+php artisan vendor:publish --tag=datatables-export
+```
+
+```html
+<script src="/vendor/datatables/dataTables.queuedExport.js"></script>
+```
+
+Add `WithExportQueue` to the DataTable service and configure the button with the existing HTML builder:
+
+```php
+use Yajra\DataTables\Html\Button;
+use Yajra\DataTables\Html\Builder as HtmlBuilder;
+use Yajra\DataTables\WithExportQueue;
+
+class UsersDataTable extends DataTable
+{
+    use WithExportQueue;
+
+    public function html(): HtmlBuilder
+    {
+        return $this->builder()
+            ->buttons([
+                Button::make([
+                    'extend' => 'queuedExport',
+                    'text' => 'Export Excel',
+                    'exportType' => 'xlsx',
+                    'filename' => 'users.xlsx',
+                    'sheetName' => 'Users',
+                    'autoDownload' => true,
+                ]),
+            ]);
+    }
+}
+```
+
+The button sends the table's current search, ordering, and filter parameters, displays export progress, polls the queued batch, and downloads the completed file. Supported options are `exportType`, `filename`, `sheetName`, `emailTo`, `autoDownload`, `pollInterval`, `processingText`, and `errorText`.
+
+JavaScript callbacks can be supplied as `onStart`, `onProgress`, `onSuccess`, and `onError`. The table element also dispatches `datatables-export:start`, `datatables-export:progress`, `datatables-export:success`, and `datatables-export:error` events:
+
+```js
+document.querySelector('#users-table').addEventListener('datatables-export:success', function (event) {
+    console.log(event.detail.export.download_url);
+});
+```
+
+Applications may listen for the server-side `ExportStarted`, `ExportCompleted`, and `ExportFailed` events to add notifications, broadcasting, or archival workflows. Broadcasting is optional and can use an application's own authenticated private channels.
+
+Status and download URLs use encrypted access tokens. Their lifetime defaults to 1,440 minutes and can be changed with the `token_ttl` option in `datatables-export.php`.
+
+### Livewire Button
+
+Install Livewire when using the Livewire component:
+
+```shell
+composer require livewire/livewire
+```
 
 1. Add the export-button livewire component on your view file that uses dataTable class.
 
