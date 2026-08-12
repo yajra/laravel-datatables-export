@@ -91,7 +91,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        if ($this->user) {
+        if ($this->user !== null) {
             Event::forget(Login::class);
             Auth::loginUsingId($this->user);
         }

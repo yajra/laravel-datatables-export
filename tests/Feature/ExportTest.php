@@ -25,7 +25,7 @@ test('it can export to excel', function () {
     Storage::disk('local')->assertExists($batchId.'.xlsx');
 });
 
-test('it starts observes and downloads an export without livewire', function () {
+test('it starts, observes, and downloads an export without Livewire', function () {
     Event::fake([ExportStarted::class, ExportCompleted::class, ExportFailed::class]);
 
     $response = $this->getAjax('/users?action=queuedExportStart&exportType=xlsx&filename=quarterly-report.xlsx');
@@ -39,7 +39,8 @@ test('it starts observes and downloads an export without livewire', function () 
     expect(QueuedExportProgress::get($batchId))->toBe(99);
     Storage::disk('local')->assertExists($batchId.'.xlsx');
 
-    Event::assertDispatched(ExportStarted::class, fn (ExportStarted $event) => $event->batchId === $batchId);
+    Event::assertDispatched(ExportStarted::class, fn (ExportStarted $event) => $event->batchId === $batchId
+        && $event->user === null);
     Event::assertDispatched(ExportCompleted::class, fn (ExportCompleted $event) => $event->downloadFilename === 'quarterly-report.xlsx');
     Event::assertNotDispatched(ExportFailed::class);
 
@@ -52,6 +53,26 @@ test('it starts observes and downloads an export without livewire', function () 
     $this->get($response->json('download_url'))
         ->assertOk()
         ->assertDownload('quarterly-report.xlsx');
+});
+
+test('it only starts queued exports from ajax requests', function () {
+    Bus::fake();
+
+    $this->get('/users?action=queuedExportStart')->assertOk();
+
+    Bus::assertNothingBatched();
+});
+
+test('it returns minimal status and download urls', function () {
+    $response = $this->getAjax('/users?action=queuedExportStart&exportType=xlsx&search[value]=Taylor');
+
+    foreach (['status_url' => 'queuedExportStatus', 'download_url' => 'queuedExportDownload'] as $key => $action) {
+        parse_str((string) parse_url((string) $response->json($key), PHP_URL_QUERY), $query);
+
+        expect($query)->toHaveKeys(['action', 'export_token'])
+            ->and($query)->toHaveCount(2)
+            ->and($query['action'])->toBe($action);
+    }
 });
 
 test('it supports csv exports and sanitizes download filenames', function () {
@@ -141,6 +162,7 @@ test('it passes table parameters and queue configuration to the export job', fun
 
         return $job instanceof DataTableExportJob
             && $job->dataTable === UsersDataTable::class
+            && $job->user === null
             && $job->request['export_type'] === 'csv'
             && $job->request['search']['value'] === 'Taylor';
     });

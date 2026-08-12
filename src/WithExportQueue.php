@@ -24,7 +24,7 @@ trait WithExportQueue
     {
         $action = request('action');
 
-        if ($action === 'queuedExportStart') {
+        if (request()->ajax() && $action === 'queuedExportStart') {
             return $this->queuedExportStart();
         }
 

@@ -42,7 +42,7 @@ class QueuedExportManager
         $job = new DataTableExportJob(
             [$dataTable::class, $attributes],
             $parameters,
-            $user ?? 0,
+            $user,
             $sheetName,
             $downloadFilename,
         );
@@ -106,18 +106,21 @@ class QueuedExportManager
             $progress = max($progress, QueuedExportProgress::get($batch->id) ?? 0);
         }
 
+        $statusUrl = $request->url().'?'.http_build_query([
+            'action' => 'queuedExportStatus',
+            'export_token' => $token,
+        ], encoding_type: PHP_QUERY_RFC3986);
+        $downloadUrl = $request->url().'?'.http_build_query([
+            'action' => 'queuedExportDownload',
+            'export_token' => $token,
+        ], encoding_type: PHP_QUERY_RFC3986);
+
         return [
             'id' => $batch->id,
             'status' => $this->batchStatus($batch),
             'progress' => $progress,
-            'status_url' => $request->fullUrlWithQuery([
-                'action' => 'queuedExportStatus',
-                'export_token' => $token,
-            ]),
-            'download_url' => $request->fullUrlWithQuery([
-                'action' => 'queuedExportDownload',
-                'export_token' => $token,
-            ]),
+            'status_url' => $statusUrl,
+            'download_url' => $downloadUrl,
         ];
     }
 
