@@ -45,6 +45,7 @@ use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\QueryDataTable;
 use Yajra\DataTables\Services\DataTable;
 use Yajra\DataTables\Support\OpenSpoutExportStyle;
+use Yajra\DataTables\Support\QueuedExportProgress;
 
 class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 {
@@ -150,15 +151,21 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
 
         $writer->addRow(Row::fromValues($headers));
 
+        $filteredQuery = $dataTable->getFilteredQuery();
+        $totalRows = $dataTable->filteredCount();
+
         if ($this->usesLazyMethod()) {
             $chunkSize = 1_000;
             if (is_int(config('datatables-export.chunk'))) {
                 $chunkSize = config('datatables-export.chunk');
             }
-            $query = $dataTable->getFilteredQuery()->lazy($chunkSize);
+            $query = $filteredQuery->lazy($chunkSize);
         } else {
-            $query = $dataTable->getFilteredQuery()->cursor();
+            $query = $filteredQuery->cursor();
         }
+
+        $processedRows = 0;
+        $reportedProgress = 0;
 
         foreach ($query as $row) {
             $cells = [];
@@ -228,6 +235,14 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             });
 
             $writer->addRow(new Row($cells));
+
+            $processedRows++;
+            if ($totalRows > 0) {
+                $progress = min(99, (int) floor(($processedRows / $totalRows) * 100));
+                if ($progress > $reportedProgress) {
+                    $reportedProgress = QueuedExportProgress::report($this->getBatchId(), $processedRows, $totalRows);
+                }
+            }
         }
 
         $writer->close();

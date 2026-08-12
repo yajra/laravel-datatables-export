@@ -11,6 +11,7 @@ use Yajra\DataTables\Events\ExportStarted;
 use Yajra\DataTables\Exports\Tests\DataTables\UsersDataTable;
 use Yajra\DataTables\Exports\Tests\Models\User;
 use Yajra\DataTables\Jobs\DataTableExportJob;
+use Yajra\DataTables\Support\QueuedExportProgress;
 
 beforeEach(function () {
     Storage::fake('local');
@@ -35,6 +36,7 @@ test('it starts observes and downloads an export without livewire', function () 
 
     $batchId = $response->json('id');
     expect($batchId)->toBeString();
+    expect(QueuedExportProgress::get($batchId))->toBe(99);
     Storage::disk('local')->assertExists($batchId.'.xlsx');
 
     Event::assertDispatched(ExportStarted::class, fn (ExportStarted $event) => $event->batchId === $batchId);
@@ -67,6 +69,8 @@ test('it exposes pending and failed batch states', function () {
     $response = $this->getAjax('/users?action=queuedExportStart');
     $batchId = $response->json('id');
 
+    QueuedExportProgress::report($batchId, 10, 20);
+
     DB::table('job_batches')->where('id', $batchId)->update([
         'pending_jobs' => 1,
         'finished_at' => null,
@@ -75,7 +79,7 @@ test('it exposes pending and failed batch states', function () {
     $this->getJson($response->json('status_url'))
         ->assertOk()
         ->assertJsonPath('status', 'pending')
-        ->assertJsonPath('progress', 0);
+        ->assertJsonPath('progress', 50);
     $this->get($response->json('download_url'))->assertConflict();
 
     DB::table('job_batches')->where('id', $batchId)->update([

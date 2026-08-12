@@ -101,10 +101,15 @@ class QueuedExportManager
      */
     protected function payload(Batch $batch, Request $request, string $token): array
     {
+        $progress = $batch->progress();
+        if (! $batch->finished()) {
+            $progress = max($progress, QueuedExportProgress::get($batch->id) ?? 0);
+        }
+
         return [
             'id' => $batch->id,
             'status' => $this->batchStatus($batch),
-            'progress' => $batch->progress(),
+            'progress' => $progress,
             'status_url' => $request->fullUrlWithQuery([
                 'action' => 'queuedExportStatus',
                 'export_token' => $token,
