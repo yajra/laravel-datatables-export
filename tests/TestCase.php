@@ -97,7 +97,13 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getEnvironmentSetUp($app): void
     {
+        $app['config']->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
         $app['config']->set('app.debug', true);
+        $app['config']->set('auth.defaults.guard', 'web');
+        $app['config']->set('auth.providers.users', [
+            'driver' => 'eloquent',
+            'model' => User::class,
+        ]);
         $app['config']->set('queue.default', 'sync');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
