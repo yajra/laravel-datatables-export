@@ -1,3 +1,16 @@
+# [13.3.0](https://github.com/yajra/laravel-datatables-export/compare/v13.2.2...v13.3.0) (2026-08-13)
+
+
+### Bug Fixes
+
+* **export:** harden queued export protocol ([6dfd1e4](https://github.com/yajra/laravel-datatables-export/commit/6dfd1e4881d60176ba7c1b61d7693131cb0b4ac8))
+* **export:** report row-level export progress ([3f409c3](https://github.com/yajra/laravel-datatables-export/commit/3f409c3a9b71e04a533f3f0c443c8cae3285fa49))
+
+
+### Features
+
+* add non-livewire queued exports ([3348433](https://github.com/yajra/laravel-datatables-export/commit/3348433249839681e4b368dda0a8d038e3865269))
+
 ## [13.2.2](https://github.com/yajra/laravel-datatables-export/compare/v13.2.1...v13.2.2) (2026-07-24)
 
 
