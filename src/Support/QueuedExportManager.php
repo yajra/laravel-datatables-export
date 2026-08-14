@@ -35,7 +35,7 @@ class QueuedExportManager
         ?string $downloadFilename = null,
     ): Batch {
         $type = $this->exportType($request);
-        $downloadFilename ??= $this->downloadFilename($request, $sheetName, $type);
+        $downloadFilename ??= $this->downloadFilename($dataTable, $request, $type);
         $parameters = $request->all();
         $parameters['export_type'] = $type;
 
@@ -66,7 +66,7 @@ class QueuedExportManager
         string $sheetName,
     ): JsonResponse {
         $type = $this->exportType($request);
-        $filename = $this->downloadFilename($request, $sheetName, $type);
+        $filename = $this->downloadFilename($dataTable, $request, $type);
         $batch = $this->dispatch($dataTable, $attributes, $request, $user, $sheetName, $filename);
         $token = $this->createToken($batch->id, $type, $filename, $user);
 
@@ -146,11 +146,11 @@ class QueuedExportManager
         return Str::lower($type);
     }
 
-    protected function downloadFilename(Request $request, string $sheetName, string $type): string
+    protected function downloadFilename(DataTable $dataTable, Request $request, string $type): string
     {
         $filename = $request->input('filename');
         if (! is_string($filename) || trim($filename) === '') {
-            $filename = (Str::slug($sheetName) ?: 'export').'-'.now()->format('Ymd-His');
+            $filename = $dataTable->getFilename();
         }
 
         $filename = basename(str_replace('\\', '/', $filename));
