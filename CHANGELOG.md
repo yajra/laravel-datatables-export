@@ -1,3 +1,10 @@
+## [13.3.1](https://github.com/yajra/laravel-datatables-export/compare/v13.3.0...v13.3.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* **export:** reuse data table filename ([98c55b7](https://github.com/yajra/laravel-datatables-export/commit/98c55b77db5b552ed27c993613f9b115499cbbc0))
+
 # [13.3.0](https://github.com/yajra/laravel-datatables-export/compare/v13.2.2...v13.3.0) (2026-08-13)
 
 
