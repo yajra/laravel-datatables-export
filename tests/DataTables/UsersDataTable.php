@@ -41,4 +41,10 @@ class UsersDataTable extends DataTable
                 Column::make('email'),
             ]);
     }
+
+    #[\Override]
+    protected function filename(): string
+    {
+        return 'users-export';
+    }
 }

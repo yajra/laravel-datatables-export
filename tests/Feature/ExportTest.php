@@ -55,6 +55,14 @@ test('it starts, observes, and downloads an export without Livewire', function (
         ->assertDownload('quarterly-report.xlsx');
 });
 
+test('it uses the data table filename when no filename is requested', function () {
+    $response = $this->getAjax('/users?action=queuedExportStart&exportType=csv');
+
+    $this->get($response->json('download_url'))
+        ->assertOk()
+        ->assertDownload('users-export.csv');
+});
+
 test('it only starts queued exports from ajax requests', function () {
     Bus::fake();
 
